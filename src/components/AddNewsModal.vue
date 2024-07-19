@@ -42,7 +42,7 @@
       </section>
       <footer class="modal-card-foot">
         <button class="button is-success" @click="addNews">Añadir</button>
-        <button class="button" @click="closeModal">Cancelar</button>
+        <button class="button ml-2" @click="closeModal">Cancelar</button>
       </footer>
     </div>
   </div>
