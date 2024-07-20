@@ -9,7 +9,7 @@
     <AddNewsModal :isActive="showModal" :closeModal="closeModal" />
 
     <div class="news-feed">
-      <NewsCard v-for="news in newsList" :key="news.id" :news="news" />
+      <NewsCard v-for="news in newsList" :key="news" :news="news" />
     </div>
   </div>
 </template>
@@ -38,6 +38,7 @@ export default defineComponent({
     onMounted(() => {
       const q = collection(db, "news");
       onSnapshot(q, (snapshot) => {
+        //@ts-ignore
         newsList.value = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),

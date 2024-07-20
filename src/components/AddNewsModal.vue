@@ -48,7 +48,7 @@
       </section>
       <footer class="modal-card-foot">
         <button class="button is-success" @click="addNews">Añadir</button>
-        <button class="button ml-2" @click="closeModal">Cancelar</button>
+        <button class="button is-primary" @click="closeModal">Cancelar</button>
       </footer>
     </div>
   </div>
@@ -82,7 +82,6 @@ const title = ref("");
 const description = ref("");
 const mediaUrl = ref("");
 const imgFile = ref();
-const closeModal = ref();
 
 // Manejador de cambio de archivo
 const handleFileChange = (event: Event) => {

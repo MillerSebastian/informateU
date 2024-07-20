@@ -1,14 +1,19 @@
 <template>
   <div class="game-page">
     <h1 class="title">Juegos</h1>
-
     <div class="add-news-button">
-      <button class="button is-primary" @click="showModal = true">+</button>
+      <button
+        class="button"
+        style="background-color: yellow; color: black"
+        @click="showModal = true"
+      >
+        +
+      </button>
     </div>
 
     <AddNewsModal :isActive="showModal" :closeModal="closeModal" />
 
-    <div class="news-feed">
+    <div class="game-feed">
       <NewsCard v-for="news in newsList" :key="news" :news="news" />
     </div>
   </div>
@@ -54,3 +59,18 @@ export default defineComponent({
   },
 });
 </script>
+<style scoped>
+.game-page {
+  padding: 1rem;
+}
+
+.add-Moda-button {
+  margin-bottom: 1rem;
+}
+
+.game-feed {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+</style>
