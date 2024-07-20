@@ -3,7 +3,7 @@
     <h1 class="title">Noticias</h1>
 
     <div class="add-news-button">
-      <button class="button is-primary" @click="showModal = true">+</button>
+      <button class="button is-danger" @click="showModal = true">+</button>
     </div>
 
     <AddNewsModal :isActive="showModal" :closeModal="closeModal" />

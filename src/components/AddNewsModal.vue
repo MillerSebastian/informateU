@@ -28,21 +28,27 @@
             ></textarea>
           </div>
         </div>
-        <div class="field">
-          <label class="label">Imagen/Video URL</label>
-          <div class="control">
+        <div class="file is-primary">
+          <label class="file-label">
             <input
-              class="input"
-              type="text"
-              v-model="mediaUrl"
-              placeholder="URL de la imagen o video"
+              class="file-input"
+              type="file"
+              @change="getFile"
+              id="fileInput"
             />
-          </div>
+            <span class="file-cta">
+              <span class="file-icon">
+                <i class="fas fa-upload"></i>
+              </span>
+              <span class="file-label"> Subir foto </span>
+            </span>
+          </label>
+          <pre>{{ imgFile?.name }}</pre>
         </div>
       </section>
       <footer class="modal-card-foot">
         <button class="button is-success" @click="addNews">Añadir</button>
-        <button class="button" @click="closeModal">Cancelar</button>
+        <button class="button ml-2" @click="closeModal">Cancelar</button>
       </footer>
     </div>
   </div>
@@ -58,6 +64,7 @@ import {
   addDoc,
   collection,
   Timestamp,
+  getDownloadURL,
 } from "@/firebase";
 
 const props = defineProps({
@@ -70,12 +77,31 @@ const props = defineProps({
     required: true,
   },
 });
+
 const title = ref("");
 const description = ref("");
 const mediaUrl = ref("");
+const imgFile = ref();
+
+// Manejador de cambio de archivo
+const handleFileChange = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files[0]) {
+    imgFile.value = target.files[0];
+  }
+};
 
 const addNews = async () => {
   try {
+    if (imgFile.value) {
+      const storageReference = storageRef(
+        storage,
+        `uploads/${imgFile.value.name}`
+      );
+      await uploadBytes(storageReference, imgFile.value);
+      mediaUrl.value = await getDownloadURL(storageReference);
+    }
+
     await addDoc(collection(db, "news"), {
       title: title.value,
       description: description.value,
@@ -87,5 +113,9 @@ const addNews = async () => {
   } catch (e) {
     console.error("Error adding document: ", e);
   }
+};
+
+const getFile = (value: any) => {
+  imgFile.value = value.target.files[0];
 };
 </script>

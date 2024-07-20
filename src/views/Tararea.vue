@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Tareas</h1>
+    <h1>Tarerea</h1>
     <p>Contenido de la página de tareas.</p>
   </div>
 </template>

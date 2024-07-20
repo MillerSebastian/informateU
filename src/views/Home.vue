@@ -1,7 +1,6 @@
 <template>
   <div class="container">
-    <h1 class="title">Juegos</h1>
-    <!-- Contenido de la sección de Juegos -->
+    <h1 class="title">Bienvenido a la Página Principal</h1>
   </div>
 </template>
 
@@ -9,6 +8,6 @@
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: "Juegos",
+  name: "Home",
 });
 </script>

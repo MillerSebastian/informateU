@@ -2,7 +2,9 @@
   <nav class="navbar" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <router-link class="navbar-item" to="/">
-        <span class="is-size-4 has-text-weight-bold">InformateU</span>
+        <span class="is-size-4 has-text-weight-bold">
+          Informate<span style="color: yellow">Ü</span>
+        </span>
       </router-link>
 
       <a
@@ -24,10 +26,19 @@
       :class="{ 'navbar-menu': true, 'is-active': isActive }"
     >
       <div class="navbar-start">
-        <router-link class="navbar-item" to="/juegos">Juegos</router-link>
-        <router-link class="navbar-item" to="/moda">Moda</router-link>
-        <router-link class="navbar-item" to="/noticias">Noticias</router-link>
-        <router-link class="navbar-item" to="/deportes">Deportes</router-link>
+        <router-link class="navbar-item juegos" to="/juegos"
+          >Juegos</router-link
+        >
+        <router-link class="navbar-item moda" to="/moda">Moda</router-link>
+        <router-link class="navbar-item noticias" to="/noticias"
+          >Noticias</router-link
+        >
+        <router-link class="navbar-item deportes" to="/deportes"
+          >Deportes</router-link
+        >
+        <router-link class="navbar-item perfil" to="/profile"
+          >Perfil</router-link
+        >
 
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link">Más</a>
@@ -36,7 +47,7 @@
             <router-link class="navbar-item" to="/productos"
               >Productos</router-link
             >
-            <router-link class="navbar-item" to="/tareas">Tareas</router-link>
+            <router-link class="navbar-item" to="/tararea">Tararea</router-link>
           </div>
         </div>
       </div>
@@ -44,10 +55,13 @@
       <div class="navbar-end">
         <div class="navbar-item">
           <div class="buttons">
-            <router-link class="button is-primary" to="/register">
+            <router-link class="button" to="/register">
               <strong>Sign up</strong>
             </router-link>
-            <router-link class="button is-light" to="/login"
+            <router-link
+              style="background-color: yellow; color: black"
+              class="button"
+              to="/login"
               >Log in</router-link
             >
           </div>
@@ -78,5 +92,28 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Añade tus estilos específicos para el componente Navbar aquí */
+/* Rutas */
+.navbar-item {
+  transition: color 0.3s ease;
+}
+
+.juegos:hover {
+  color: yellow;
+}
+
+.moda:hover {
+  color: purple;
+}
+
+.noticias:hover {
+  color: red;
+}
+
+.deportes:hover {
+  color: green;
+}
+
+.perfil:hover {
+  color: blue;
+}
 </style>

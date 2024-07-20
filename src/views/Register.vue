@@ -15,7 +15,9 @@
         </div>
       </div>
       <div class="control">
-        <button class="button is-primary">Register</button>
+        <button class="button" style="background-color: yellow; color: black">
+          Registrarse
+        </button>
       </div>
     </form>
   </div>

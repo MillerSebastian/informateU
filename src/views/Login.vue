@@ -15,7 +15,9 @@
         </div>
       </div>
       <div class="control">
-        <button class="button is-primary">Iniciar Sesión</button>
+        <button class="button" style="background-color: yellow; color: black">
+          Iniciar Sesión
+        </button>
       </div>
     </form>
   </div>
@@ -46,7 +48,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-/* Añade tus estilos personalizados aquí */
-</style>
