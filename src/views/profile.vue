@@ -153,6 +153,7 @@ export default defineComponent({
     const description = ref("");
 
     const selectImage = () => {
+      //@ts-ignore
       fileInput.value.click();
     };
 

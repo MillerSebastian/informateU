@@ -7,6 +7,7 @@ import Login from "@/views/Login.vue";
 import Register from "@/views/Register.vue";
 import Productos from "@/views/Productos.vue";
 import Tararea from "@/views/Tararea.vue";
+//@ts-ignore
 import Home from "@/views/Home.vue";
 import profile from "@/views/profile.vue";
 
