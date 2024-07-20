@@ -82,6 +82,7 @@ const title = ref("");
 const description = ref("");
 const mediaUrl = ref("");
 const imgFile = ref();
+const closeModal = ref();
 
 // Manejador de cambio de archivo
 const handleFileChange = (event: Event) => {
