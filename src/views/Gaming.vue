@@ -1,14 +1,55 @@
 <template>
-  <div class="container">
+  <div class="game-page">
     <h1 class="title">Juegos</h1>
-    <!-- Contenido de la sección de Juegos -->
+
+    <div class="add-news-button">
+      <button class="button is-primary" @click="showModal = true">+</button>
+    </div>
+
+    <AddNewsModal :isActive="showModal" :closeModal="closeModal" />
+
+    <div class="news-feed">
+      <NewsCard v-for="news in newsList" :key="news.id" :news="news" />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
+import { getFirestore, collection, onSnapshot } from "firebase/firestore";
+import AddNewsModal from "@/components/AddNewsModal.vue";
+import NewsCard from "@/components/NewsCards.vue";
 
 export default defineComponent({
-  name: "Juegos",
+  name: "Gaming",
+  components: {
+    AddNewsModal,
+    NewsCard,
+  },
+  setup() {
+    const db = getFirestore();
+    const showModal = ref(false);
+    const newsList = ref([]);
+
+    const closeModal = () => {
+      showModal.value = false;
+    };
+
+    onMounted(() => {
+      const q = collection(db, "news");
+      onSnapshot(q, (snapshot) => {
+        newsList.value = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+      });
+    });
+
+    return {
+      showModal,
+      closeModal,
+      newsList,
+    };
+  },
 });
 </script>
