@@ -32,16 +32,14 @@
                   <input
                     class="input is-success"
                     type="text"
-                    placeholder="Text input"
+                    placeholder="nombre de usuario"
                     v-model="username"
                     :disabled="isDisabled"
                   />
                   <span class="icon is-small is-left">
                     <i class="fas fa-user"></i>
                   </span>
-                  <span class="icon is-small is-right">
-                    <i class="fas fa-check"></i>
-                  </span>
+                  <span class="icon is-small is-right"> </span>
                 </div>
               </div>
             </div>
@@ -52,16 +50,14 @@
                   <input
                     class="input is-danger"
                     type="email"
-                    placeholder="Email input"
+                    placeholder="Email"
                     v-model="email"
                     :disabled="isDisabled"
                   />
                   <span class="icon is-small is-left">
                     <i class="fas fa-envelope"></i>
                   </span>
-                  <span class="icon is-small is-right">
-                    <i class="fas fa-check"></i>
-                  </span>
+                  <span class="icon is-small is-right"> </span>
                 </div>
               </div>
             </div>
@@ -146,8 +142,8 @@ export default defineComponent({
     );
     const fileInput = ref(null);
     const isDisabled = ref(false);
-    const username = ref("jhon doe");
-    const email = ref("jhon@");
+    const username = ref("");
+    const email = ref("");
     const city = ref("Barranquilla");
     const program = ref("Ing. Sistemas");
     const description = ref("");

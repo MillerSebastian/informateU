@@ -53,7 +53,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-/* Añade tus estilos específicos para el componente NewsCard aquí */
-</style>

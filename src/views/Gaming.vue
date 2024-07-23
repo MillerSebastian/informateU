@@ -14,7 +14,7 @@
     <AddNewsModal :isActive="showModal" :closeModal="closeModal" />
 
     <div class="game-feed">
-      <NewsCard v-for="news in newsList" :key="news" :news="news" />
+      <NewsCard v-for="news in newsList" :key="news.id" :news="news" />
     </div>
   </div>
 </template>
@@ -23,7 +23,7 @@
 import { defineComponent, ref, onMounted } from "vue";
 import { getFirestore, collection, onSnapshot } from "firebase/firestore";
 import AddNewsModal from "@/components/AddNewsModal.vue";
-import NewsCard from "@/components/NewsCards.vue";
+import NewsCard from "../components/NewsCards.vue";
 
 export default defineComponent({
   name: "Gaming",
@@ -43,7 +43,6 @@ export default defineComponent({
     onMounted(() => {
       const q = collection(db, "news");
       onSnapshot(q, (snapshot) => {
-        //@ts-ignore
         newsList.value = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
@@ -59,12 +58,13 @@ export default defineComponent({
   },
 });
 </script>
+
 <style scoped>
 .game-page {
   padding: 1rem;
 }
 
-.add-Moda-button {
+.add-news-button {
   margin-bottom: 1rem;
 }
 

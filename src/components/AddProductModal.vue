@@ -3,7 +3,7 @@
     <div class="modal-background"></div>
     <div class="modal-card">
       <header class="modal-card-head">
-        <p class="modal-card-title">Añadir Noticia</p>
+        <p class="modal-card-title">Añadir Producto</p>
         <button class="delete" aria-label="close" @click="closeModal"></button>
       </header>
       <section class="modal-card-body">
@@ -92,13 +92,14 @@ const mediaUrl = ref("");
 const imgFile = ref<File | null>(null);
 const fileName = ref<string>("");
 
-// const handleFileChange = (event: Event) => {
-//   const target = event.target as HTMLInputElement;
-//   if (target.files && target.files[0]) {
-//     imgFile.value = target.files[0];
-//     fileName.value = target.files[0].name;
-//   }
-// };
+// Manejador de cambio de archivo
+const handleFileChange = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files[0]) {
+    imgFile.value = target.files[0];
+    fileName.value = target.files[0].name;
+  }
+};
 
 const addNews = async () => {
   try {
