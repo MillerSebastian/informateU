@@ -25,7 +25,7 @@
       id="navbarBasicExample"
       :class="{ 'navbar-menu': true, 'is-active': isActive }"
     >
-      <div class="navbar-start">
+      <div class="navbar-start" v-if="user">
         <router-link class="navbar-item juegos" to="/juegos"
           >Juegos</router-link
         >
@@ -36,13 +36,8 @@
         <router-link class="navbar-item deportes" to="/deportes"
           >Deportes</router-link
         >
-        <router-link class="navbar-item perfil" to="/profile"
-          >Perfil</router-link
-        >
-
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link">Más</a>
-
           <div class="navbar-dropdown">
             <router-link class="navbar-item" to="/productos"
               >Productos</router-link
@@ -53,7 +48,7 @@
       </div>
 
       <div class="navbar-end">
-        <div class="navbar-item">
+        <div class="navbar-item" v-if="!user">
           <div class="buttons">
             <router-link class="button" to="/register">
               <strong>Sign up</strong>
@@ -66,23 +61,49 @@
             >
           </div>
         </div>
+        <div class="navbar-item" v-if="user">
+          <div class="buttons">
+            <button @click="logout" class="button">Log out</button>
+          </div>
+        </div>
       </div>
     </div>
   </nav>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { auth } from "../firebase"; // Asegúrate de que esta ruta sea correcta
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const isActive = ref(false);
+const user = ref(null);
+
+onMounted(() => {
+  onAuthStateChanged(auth, (currentUser) => {
+    user.value = currentUser;
+  });
+});
 
 const toggleBurger = () => {
   isActive.value = !isActive.value;
 };
+
+const logout = async () => {
+  try {
+    await signOut(auth);
+    user.value = null;
+    router.push("/login");
+  } catch (error) {
+    console.error("Error al cerrar sesión:", error);
+  }
+};
 </script>
 
 <style scoped>
-/* Rutas */
+/* Estilo para el Navbar */
 .navbar-item {
   transition: color 0.3s ease;
 }
