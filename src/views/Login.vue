@@ -32,31 +32,22 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 import { auth } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
-export default defineComponent({
-  name: "Login",
-  data() {
-    return {
-      email: "",
-      password: "",
-    };
-  },
-  methods: {
-    async login() {
-      try {
-        await signInWithEmailAndPassword(auth, this.email, this.password);
-        this.$router.push("/");
-      } catch (error) {
-        console.error("Error al iniciar sesión:", error);
-        // Consider adding user-friendly error handling here
-      }
-    },
-  },
-});
+const email = ref("");
+const password = ref("");
+const router = useRouter();
+
+const login = async () => {
+  try {
+    await signInWithEmailAndPassword(auth, email.value, password.value);
+    router.push("/");
+  } catch (error) {}
+};
 </script>
 
 <style scoped>

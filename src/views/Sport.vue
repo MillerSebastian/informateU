@@ -20,44 +20,28 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, onMounted } from "vue";
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
 import { getFirestore, collection, onSnapshot } from "firebase/firestore";
 import AddNewsModal from "@/components/AddNewsModal.vue";
 import NewsCard from "@/components/NewsCards.vue";
 
-export default defineComponent({
-  name: "News",
-  components: {
-    AddNewsModal,
-    NewsCard,
-  },
-  setup() {
-    const db = getFirestore();
-    const showModal = ref(false);
-    const newsList = ref([]);
+const db = getFirestore();
+const showModal = ref(false);
+const newsList = ref<any[]>([]);
 
-    const closeModal = () => {
-      showModal.value = false;
-    };
+const closeModal = () => {
+  showModal.value = false;
+};
 
-    onMounted(() => {
-      const q = collection(db, "news");
-      onSnapshot(q, (snapshot) => {
-        //@ts-ignore
-        newsList.value = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-      });
-    });
-
-    return {
-      showModal,
-      closeModal,
-      newsList,
-    };
-  },
+onMounted(() => {
+  const q = collection(db, "news");
+  onSnapshot(q, (snapshot) => {
+    newsList.value = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  });
 });
 </script>
 

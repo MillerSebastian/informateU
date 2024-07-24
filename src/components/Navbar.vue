@@ -71,24 +71,14 @@
   </nav>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from "vue";
+<script setup lang="ts">
+import { ref } from "vue";
 
-export default defineComponent({
-  name: "Navbar",
-  setup() {
-    const isActive = ref(false);
+const isActive = ref(false);
 
-    function toggleBurger() {
-      isActive.value = !isActive.value;
-    }
-
-    return {
-      isActive,
-      toggleBurger,
-    };
-  },
-});
+const toggleBurger = () => {
+  isActive.value = !isActive.value;
+};
 </script>
 
 <style scoped>

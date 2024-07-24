@@ -106,64 +106,59 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from "vue";
+<script setup lang="ts">
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 import { auth, db } from "../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { addDoc, collection } from "firebase/firestore";
 
-export default defineComponent({
-  name: "Register",
-  data() {
-    return {
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      program: "",
-      city: "",
-      documentType: "",
-      birthDate: "",
-      termsAccepted: false,
-      isDisabled: ref(false),
-    };
-  },
-  methods: {
-    async register() {
-      if (!this.termsAccepted) {
-        alert("Debes aceptar los términos y condiciones.");
-        return;
-      }
+const router = useRouter();
 
-      try {
-        // Crear un usuario en Firebase Authentication
-        const userCredential = await createUserWithEmailAndPassword(
-          auth,
-          this.email,
-          this.password
-        );
-        const user = userCredential.user;
+const firstName = ref("");
+const lastName = ref("");
+const email = ref("");
+const password = ref("");
+const program = ref("");
+const city = ref("");
+const documentType = ref("");
+const birthDate = ref("");
+const termsAccepted = ref(false);
+const isDisabled = ref(false);
 
-        // Guardar datos del usuario en Firestore
-        await addDoc(collection(db, "users"), {
-          uid: user.uid,
-          firstName: this.firstName,
-          lastName: this.lastName,
-          email: this.email,
-          program: this.program,
-          city: this.city,
-          documentType: this.documentType,
-          birthDate: this.birthDate,
-        });
+const register = async () => {
+  if (!termsAccepted.value) {
+    alert("Debes aceptar los términos y condiciones.");
+    return;
+  }
 
-        this.$router.push("/");
-      } catch (error) {
-        console.error("Error al registrarse:", error);
-        // Consider adding user-friendly error handling here
-      }
-    },
-  },
-});
+  try {
+    // Crear un usuario en Firebase Authentication
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email.value,
+      password.value
+    );
+    const user = userCredential.user;
+
+    // Guardar datos del usuario en Firestore
+    await addDoc(collection(db, "users"), {
+      uid: user.uid,
+      firstName: firstName.value,
+      lastName: lastName.value,
+      email: email.value,
+      program: program.value,
+      city: city.value,
+      documentType: documentType.value,
+      birthDate: birthDate.value,
+    });
+
+    router.push("/");
+  } catch (error) {
+    console.error("Error al registrarse:", error);
+    // Consider adding user-friendly error handling here
+  }
+};
 </script>
 
 <style scoped>

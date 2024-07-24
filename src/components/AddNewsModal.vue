@@ -92,13 +92,13 @@ const mediaUrl = ref("");
 const imgFile = ref<File | null>(null);
 const fileName = ref<string>("");
 
-// const handleFileChange = (event: Event) => {
-//   const target = event.target as HTMLInputElement;
-//   if (target.files && target.files[0]) {
-//     imgFile.value = target.files[0];
-//     fileName.value = target.files[0].name;
-//   }
-// };
+const handleFileChange = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files[0]) {
+    imgFile.value = target.files[0];
+    fileName.value = target.files[0].name;
+  }
+};
 
 const addNews = async () => {
   try {

@@ -50,53 +50,35 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, onMounted } from "vue";
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
 import { getFirestore, collection, onSnapshot } from "firebase/firestore";
 import AddProductModal from "@/components/AddProductModal.vue";
 import ProductCard from "@/components/ProductCard.vue";
 
-export default defineComponent({
-  name: "Productos",
-  components: {
-    AddProductModal,
-    ProductCard,
-  },
-  setup() {
-    const db = getFirestore();
-    const showModal = ref(false);
-    const productList = ref([]);
-    const step = ref(0);
+const db = getFirestore();
+const showModal = ref(false);
+const productList = ref<any[]>([]);
+const step = ref(0);
 
-    const closeModal = () => {
-      showModal.value = false;
-    };
+const closeModal = () => {
+  showModal.value = false;
+};
 
-    const nextStep = () => {
-      if (step.value < 2) {
-        step.value += 1;
-      }
-    };
+const nextStep = () => {
+  if (step.value < 2) {
+    step.value += 1;
+  }
+};
 
-    onMounted(() => {
-      const q = collection(db, "products");
-      onSnapshot(q, (snapshot) => {
-        //@ts-ignore
-        productList.value = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-      });
-    });
-
-    return {
-      showModal,
-      closeModal,
-      productList,
-      step,
-      nextStep,
-    };
-  },
+onMounted(() => {
+  const q = collection(db, "products");
+  onSnapshot(q, (snapshot) => {
+    productList.value = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  });
 });
 </script>
 

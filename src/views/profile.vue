@@ -131,63 +131,42 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from "vue";
+<script setup lang="ts">
+import { ref } from "vue";
 
-export default defineComponent({
-  name: "UserProfile",
-  setup() {
-    const profileImage = ref(
-      "https://bulma.io/assets/images/placeholders/128x128.png"
-    );
-    const fileInput = ref(null);
-    const isDisabled = ref(false);
-    const username = ref("");
-    const email = ref("");
-    const city = ref("Barranquilla");
-    const program = ref("Ing. Sistemas");
-    const description = ref("");
+const profileImage = ref(
+  "https://bulma.io/assets/images/placeholders/128x128.png"
+);
+const fileInput = ref<HTMLInputElement | null>(null);
+const isDisabled = ref(false);
+const username = ref("");
+const email = ref("");
+const city = ref("Barranquilla");
+const program = ref("Ing. Sistemas");
+const description = ref("");
 
-    const selectImage = () => {
-      //@ts-ignore
-      fileInput.value.click();
+const selectImage = () => {
+  fileInput.value?.click();
+};
+
+const onFileChange = (event: Event) => {
+  const file = (event.target as HTMLInputElement).files?.[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      profileImage.value = e.target?.result as string;
     };
+    reader.readAsDataURL(file);
+  }
+};
 
-    const onFileChange = (event: Event) => {
-      const file = (event.target as HTMLInputElement).files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          profileImage.value = e.target?.result as string;
-        };
-        reader.readAsDataURL(file);
-      }
-    };
+const onSubmit = () => {
+  isDisabled.value = true;
+};
 
-    const onSubmit = () => {
-      isDisabled.value = true;
-    };
-
-    const onEdit = () => {
-      isDisabled.value = false;
-    };
-
-    return {
-      profileImage,
-      fileInput,
-      isDisabled,
-      username,
-      email,
-      program,
-      city,
-      description,
-      selectImage,
-      onFileChange,
-      onSubmit,
-      onEdit,
-    };
-  },
-});
+const onEdit = () => {
+  isDisabled.value = false;
+};
 </script>
 
 <style scoped>
