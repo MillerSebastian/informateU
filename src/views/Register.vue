@@ -111,7 +111,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { auth, db } from "../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { addDoc, collection } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore"; // Importamos setDoc y doc en lugar de addDoc
 
 const router = useRouter();
 
@@ -141,9 +141,8 @@ const register = async () => {
     );
     const user = userCredential.user;
 
-    // Guardar datos del usuario en Firestore
-    await addDoc(collection(db, "users"), {
-      uid: user.uid,
+    // Guardar datos del usuario en Firestore usando setDoc y el uid del usuario
+    await setDoc(doc(db, "users", user.uid), {
       firstName: firstName.value,
       lastName: lastName.value,
       email: email.value,

@@ -6,10 +6,19 @@
       <button class="button is-danger" @click="showModal = true">+</button>
     </div>
 
-    <AddNewsModal :isActive="showModal" :closeModal="closeModal" />
+    <AddNewsModal
+      :isActive="showModal"
+      :closeModal="closeModal"
+      category="news"
+    />
 
     <div class="news-feed">
-      <NewsCard v-for="news in newsList" :key="news" :news="news" />
+      <NewsCard
+        v-for="news in newsList"
+        :key="news.id"
+        :news="news"
+        category="news"
+      />
     </div>
   </div>
 </template>

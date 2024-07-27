@@ -1,21 +1,25 @@
 <template>
-  <div class="Moda-page">
+  <div class="moda-page">
     <h1 class="title">Moda</h1>
-
     <div class="add-news-button">
-      <button
-        class="button"
-        style="background-color: blueviolet; color: black"
-        @click="showModal = true"
-      >
+      <button class="button is-button-modal" @click="showModal = true">
         +
       </button>
     </div>
 
-    <AddNewsModal :isActive="showModal" :closeModal="closeModal" />
+    <AddNewsModal
+      :isActive="showModal"
+      :closeModal="closeModal"
+      category="moda"
+    />
 
-    <div class="news-feed">
-      <NewsCard v-for="news in newsList" :key="news" :news="news" />
+    <div class="moda-feed">
+      <NewsCard
+        v-for="news in newsList"
+        :key="news.id"
+        :news="news"
+        category="moda"
+      />
     </div>
   </div>
 </template>
@@ -46,17 +50,21 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.Moda-page {
+.moda-page {
   padding: 1rem;
 }
 
-.add-Moda-button {
+.add-news-button {
   margin-bottom: 1rem;
 }
 
-.Moda-feed {
+.moda-feed {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
+}
+.is-button-modal {
+  background-color: blueviolet;
+  color: black;
 }
 </style>

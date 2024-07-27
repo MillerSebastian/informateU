@@ -3,7 +3,7 @@
     <div class="modal-background"></div>
     <div class="modal-card">
       <header class="modal-card-head">
-        <p class="modal-card-title">Añadir Producto</p>
+        <p class="modal-card-title">Añadir Noticia</p>
         <button class="delete" aria-label="close" @click="closeModal"></button>
       </header>
       <section class="modal-card-body">
@@ -84,6 +84,10 @@ const props = defineProps({
     type: Function,
     required: true,
   },
+  category: {
+    type: String,
+    required: true,
+  },
 });
 
 const title = ref("");
@@ -92,7 +96,6 @@ const mediaUrl = ref("");
 const imgFile = ref<File | null>(null);
 const fileName = ref<string>("");
 
-// Manejador de cambio de archivo
 const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files[0]) {
@@ -120,7 +123,7 @@ const addNews = async () => {
       mediaUrl.value = await getDownloadURL(storageReference);
     }
 
-    await addDoc(collection(db, "news"), {
+    await addDoc(collection(db, props.category), {
       title: title.value,
       description: description.value,
       imageUrl: mediaUrl.value,
@@ -129,7 +132,9 @@ const addNews = async () => {
     });
 
     props.closeModal();
-  } catch {}
+  } catch (error) {
+    console.error("Error al añadir noticia:", error);
+  }
 };
 </script>
 
@@ -149,11 +154,6 @@ const addNews = async () => {
 .field {
   margin-bottom: 0.75rem;
 }
-
-/* .button {
-  background-color: yellow;
-  color: black;
-} */
 
 .select {
   width: 100%;

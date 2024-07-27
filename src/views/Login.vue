@@ -4,7 +4,7 @@
     style="height: 100vh"
   >
     <div style="width: 50%">
-      <img src="/Logo americana 2.png" alt="Logo" class="logo-image" />
+      <img src="/americana logo.png" alt="Logo" class="logo-image" />
       <h1 class="title has-text-centered">Iniciar Sesión</h1>
       <form @submit.prevent="login">
         <div class="field">
@@ -65,7 +65,7 @@ const login = async () => {
 .logo-image {
   display: block;
   margin: 0 auto 20px;
-  max-width: 70%;
+  max-width: 80%;
   height: auto;
 }
 </style>

@@ -39,7 +39,6 @@
                   <span class="icon is-small is-left">
                     <i class="fas fa-user"></i>
                   </span>
-                  <span class="icon is-small is-right"> </span>
                 </div>
               </div>
             </div>
@@ -57,7 +56,6 @@
                   <span class="icon is-small is-left">
                     <i class="fas fa-envelope"></i>
                   </span>
-                  <span class="icon is-small is-right"> </span>
                 </div>
               </div>
             </div>
@@ -66,7 +64,7 @@
           <div class="columns">
             <div class="column">
               <div class="field">
-                <label class="label has-text-white">Cuidad</label>
+                <label class="label has-text-white">Ciudad</label>
                 <div class="control">
                   <div class="select">
                     <select v-model="city" :disabled="isDisabled">
@@ -88,9 +86,9 @@
                     <select v-model="program" :disabled="isDisabled">
                       <option>Ing. Sistemas</option>
                       <option>Ing. Industrial</option>
-                      <option>enfermeria</option>
-                      <option>Logistica portuaria</option>
-                      <option>Odontologia</option>
+                      <option>enfermería</option>
+                      <option>Logística Portuaria</option>
+                      <option>Odontología</option>
                     </select>
                   </div>
                 </div>
@@ -99,7 +97,7 @@
           </div>
           <!-- Message Textarea -->
           <div class="field">
-            <label class="label has-text-white">Descripcion</label>
+            <label class="label has-text-white">Descripción</label>
             <div class="control">
               <textarea
                 class="textarea"
@@ -132,18 +130,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+import { auth } from "../firebase";
 
 const profileImage = ref(
   "https://bulma.io/assets/images/placeholders/128x128.png"
 );
 const fileInput = ref<HTMLInputElement | null>(null);
-const isDisabled = ref(false);
+const isDisabled = ref(true);
 const username = ref("");
 const email = ref("");
-const city = ref("Barranquilla");
-const program = ref("Ing. Sistemas");
+const city = ref("");
+const program = ref("");
 const description = ref("");
+
+const userId = auth.currentUser?.uid;
 
 const selectImage = () => {
   fileInput.value?.click();
@@ -155,18 +157,55 @@ const onFileChange = (event: Event) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       profileImage.value = e.target?.result as string;
+      // Aquí puedes agregar la lógica para subir la imagen a Firebase Storage
     };
     reader.readAsDataURL(file);
   }
 };
 
-const onSubmit = () => {
-  isDisabled.value = true;
+const onSubmit = async () => {
+  if (!userId) return;
+
+  try {
+    // Actualizar los datos del usuario en Firestore
+    const userDoc = doc(getFirestore(), "users", userId);
+    await updateDoc(userDoc, {
+      username: username.value,
+      email: email.value,
+      city: city.value,
+      program: program.value,
+      description: description.value,
+    });
+    isDisabled.value = true;
+  } catch (error) {
+    console.error("Error al actualizar el perfil:", error);
+  }
 };
 
 const onEdit = () => {
   isDisabled.value = false;
 };
+
+// Cargar datos del usuario al montar el componente
+onMounted(async () => {
+  if (!userId) return;
+
+  try {
+    const userDoc = doc(getFirestore(), "users", userId);
+    const docSnap = await getDoc(userDoc);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      username.value = data.username || "";
+      email.value = data.email || "";
+      city.value = data.city || "";
+      program.value = data.program || "";
+      description.value = data.description || "";
+      // Aquí deberías cargar la foto de perfil si la has guardado en algún lugar
+    }
+  } catch (error) {
+    console.error("Error al cargar el perfil:", error);
+  }
+});
 </script>
 
 <style scoped>

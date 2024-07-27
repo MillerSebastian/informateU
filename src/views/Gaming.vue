@@ -2,19 +2,24 @@
   <div class="game-page">
     <h1 class="title">Juegos</h1>
     <div class="add-news-button">
-      <button
-        class="button"
-        style="background-color: yellow; color: black"
-        @click="showModal = true"
-      >
+      <button class="button is-button-modal" @click="showModal = true">
         +
       </button>
     </div>
 
-    <AddNewsModal :isActive="showModal" :closeModal="closeModal" />
+    <AddNewsModal
+      :isActive="showModal"
+      :closeModal="closeModal"
+      category="gaming"
+    />
 
     <div class="game-feed">
-      <NewsCard v-for="news in newsList" :key="news.id" :news="news" />
+      <NewsCard
+        v-for="news in newsList"
+        :key="news.id"
+        :news="news"
+        category="gaming"
+      />
     </div>
   </div>
 </template>
@@ -34,7 +39,7 @@ const closeModal = () => {
 };
 
 onMounted(() => {
-  const q = collection(db, "news");
+  const q = collection(db, "gaming");
   onSnapshot(q, (snapshot) => {
     newsList.value = snapshot.docs.map((doc) => ({
       id: doc.id,
@@ -57,5 +62,9 @@ onMounted(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
+}
+.is-button-modal {
+  background-color: yellow;
+  color: black;
 }
 </style>

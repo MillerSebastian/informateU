@@ -6,6 +6,9 @@ import {
   addDoc,
   collection,
   Timestamp,
+  updateDoc,
+  doc,
+  getDocs,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -51,4 +54,7 @@ export {
   getDownloadURL,
   ref,
   uploadBytes,
+  updateDoc,
+  doc,
+  getDocs,
 };

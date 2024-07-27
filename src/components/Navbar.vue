@@ -36,6 +36,10 @@
         <router-link class="navbar-item deportes" to="/deportes"
           >Deportes</router-link
         >
+        <router-link class="navbar-item perfil" to="/profile"
+          >Perfil</router-link
+        >
+
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link">Más</a>
           <div class="navbar-dropdown">
@@ -73,7 +77,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { auth } from "../firebase"; // Asegúrate de que esta ruta sea correcta
+import { auth } from "../firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from "vue-router";
 
@@ -83,6 +87,7 @@ const user = ref(null);
 
 onMounted(() => {
   onAuthStateChanged(auth, (currentUser) => {
+    //@ts-ignore
     user.value = currentUser;
   });
 });
@@ -103,8 +108,7 @@ const logout = async () => {
 </script>
 
 <style scoped>
-/* Estilo para el Navbar */
-.navbar-item {
+ß .navbar-item {
   transition: color 0.3s ease;
 }
 

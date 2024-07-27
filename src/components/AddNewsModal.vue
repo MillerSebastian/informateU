@@ -84,6 +84,10 @@ const props = defineProps({
     type: Function,
     required: true,
   },
+  category: {
+    type: String,
+    required: true,
+  },
 });
 
 const title = ref("");
@@ -119,7 +123,7 @@ const addNews = async () => {
       mediaUrl.value = await getDownloadURL(storageReference);
     }
 
-    await addDoc(collection(db, "news"), {
+    await addDoc(collection(db, props.category), {
       title: title.value,
       description: description.value,
       imageUrl: mediaUrl.value,
@@ -128,7 +132,9 @@ const addNews = async () => {
     });
 
     props.closeModal();
-  } catch {}
+  } catch (error) {
+    console.error("Error al añadir noticia:", error);
+  }
 };
 </script>
 
@@ -148,11 +154,6 @@ const addNews = async () => {
 .field {
   margin-bottom: 0.75rem;
 }
-
-/* .button {
-  background-color: yellow;
-  color: black;
-} */
 
 .select {
   width: 100%;

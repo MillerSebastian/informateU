@@ -1,21 +1,25 @@
 <template>
   <div class="sport-page">
     <h1 class="title">Deportes</h1>
-
     <div class="add-news-button">
-      <button
-        class="button"
-        style="background-color: green; color: black"
-        @click="showModal = true"
-      >
+      <button class="button is-button-modal" @click="showModal = true">
         +
       </button>
     </div>
 
-    <AddNewsModal :isActive="showModal" :closeModal="closeModal" />
+    <AddNewsModal
+      :isActive="showModal"
+      :closeModal="closeModal"
+      category="sport"
+    />
 
     <div class="sport-feed">
-      <NewsCard v-for="news in newsList" :key="news" :news="news" />
+      <NewsCard
+        v-for="news in newsList"
+        :key="news.id"
+        :news="news"
+        category="sport"
+      />
     </div>
   </div>
 </template>
@@ -33,9 +37,8 @@ const newsList = ref<any[]>([]);
 const closeModal = () => {
   showModal.value = false;
 };
-
 onMounted(() => {
-  const q = collection(db, "news");
+  const q = collection(db, "sport");
   onSnapshot(q, (snapshot) => {
     newsList.value = snapshot.docs.map((doc) => ({
       id: doc.id,
@@ -58,5 +61,10 @@ onMounted(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
+}
+
+.is-button-modal {
+  background-color: green;
+  color: black;
 }
 </style>

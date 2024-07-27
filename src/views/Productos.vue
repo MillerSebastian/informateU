@@ -19,31 +19,36 @@
         class="message full-screen-message"
         @click="nextStep"
       >
-        <img src="/americana logo.png" alt="Logo" class="logo-image" />
+        <img src="/Logo americana 2.png" alt="Logo" class="logo-image" />
         <h1 class="title">
           Aquí puedes publicar tus productos o emprendimientos que tengas en
           mente
         </h1>
       </div>
       <div v-else key="products" class="products full-screen">
-        <div class="product-header">
+        <div class="moda-page">
           <h1 class="title">Productos</h1>
-          <button
-            class="button"
-            style="background-color: yellow; color: black"
-            @click="showModal = true"
-          >
-            Crear Producto
-          </button>
-        </div>
-        <AddProductModal :isActive="showModal" :closeModal="closeModal" />
+          <div class="add-news-button">
+            <button class="button is-button-modal" @click="showModal = true">
+              +
+            </button>
+          </div>
 
-        <div class="product-feed">
-          <ProductCard
-            v-for="product in productList"
-            :key="product.id"
-            :product="product"
+          <AddProductModal
+            :isActive="showModal"
+            :closeModal="closeModal"
+            category="product"
+            @productAdded="fetchProducts"
           />
+
+          <div class="moda-feed">
+            <ProductCard
+              v-for="news in newsList"
+              :key="news.id"
+              :news="news"
+              category="product"
+            />
+          </div>
         </div>
       </div>
     </transition>
@@ -58,7 +63,7 @@ import ProductCard from "@/components/ProductCard.vue";
 
 const db = getFirestore();
 const showModal = ref(false);
-const productList = ref<any[]>([]);
+const newsList = ref<any[]>([]);
 const step = ref(0);
 
 const closeModal = () => {
@@ -71,15 +76,18 @@ const nextStep = () => {
   }
 };
 
-onMounted(() => {
+const fetchProducts = () => {
   const q = collection(db, "products");
   onSnapshot(q, (snapshot) => {
-    productList.value = snapshot.docs.map((doc) => ({
+    newsList.value = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
+    console.log("Fetched products: ", newsList.value); // Log for debugging
   });
-});
+};
+
+onMounted(fetchProducts);
 </script>
 
 <style scoped>
