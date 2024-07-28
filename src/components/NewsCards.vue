@@ -22,7 +22,10 @@
       </div>
 
       <div class="content">
-        {{ news.description }}
+        <p :class="{ 'is-clipped': !isExpanded }">{{ news.description }}</p>
+        <button class="button is-small is-text" @click="toggleReadMore">
+          {{ isExpanded ? "Leer menos" : "Leer más" }}
+        </button>
         <br />
         <time :datetime="news.timestamp">{{ formattedDate }}</time>
       </div>
@@ -37,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { ref, computed } from "vue";
 import { doc, deleteDoc } from "firebase/firestore";
 import { db } from "@/firebase";
 
@@ -47,7 +50,7 @@ interface News {
   title: string;
   author: string;
   description: string;
-  timestamp: any; // Asegúrate de que el tipo sea compatible con Date
+  timestamp: any;
 }
 
 const props = defineProps<{
@@ -56,7 +59,7 @@ const props = defineProps<{
 }>();
 
 const formattedDate = computed(() => {
-  const date = new Date(props.news.timestamp.seconds * 1000); // Convierte el timestamp de Firebase a Date
+  const date = new Date(props.news.timestamp.seconds * 1000);
   const day = date.getDate().toString().padStart(2, "0");
   const month = (date.getMonth() + 1).toString().padStart(2, "0");
   const year = date.getFullYear();
@@ -72,8 +75,12 @@ const deleteNews = async (id: string) => {
   }
 };
 
+const isExpanded = ref(false);
+const toggleReadMore = () => {
+  isExpanded.value = !isExpanded.value;
+};
+
 const editNews = (news: News) => {
-  // Implementa tu lógica de edición aquí
   console.log("Editar noticia:", news);
 };
 </script>
@@ -81,10 +88,26 @@ const editNews = (news: News) => {
 <style scoped>
 .card {
   margin-bottom: 1rem;
+  max-width: 400px; /* Ajusta este valor según tus necesidades */
 }
 
 .card-image img {
   object-fit: cover;
+  width: 100%;
+  height: auto;
+}
+
+.content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  /* -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3; Número de líneas antes de truncar el texto */
+}
+
+.is-clipped {
+  /* -webkit-line-clamp: 3; Número de líneas antes de truncar el texto */
+  max-height: 4.5em; /* Ajusta esto según el número de líneas y el tamaño de la fuente */
 }
 
 .buttons {

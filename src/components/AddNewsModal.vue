@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineComponent, ref } from "vue";
+import { ref } from "vue";
 import {
   storage,
   ref as storageRef,
@@ -127,6 +127,7 @@ const addNews = async () => {
       title: title.value,
       description: description.value,
       imageUrl: mediaUrl.value,
+      videoUrl: mediaUrl.value,
       author: user.displayName || user.email,
       timestamp: Timestamp.now(),
     });

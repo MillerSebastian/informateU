@@ -1,18 +1,17 @@
 <template>
   <div>
-    <h1>Tarerea</h1>
-    <p>Contenido de la página de tareas.</p>
+    <Chat />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import Chat from "@/components/Chat.vue";
 
 export default defineComponent({
   name: "Tareas",
+  components: {
+    Chat,
+  },
 });
 </script>
-
-<style scoped>
-/* Añade tus estilos específicos para el componente Tareas aquí */
-</style>

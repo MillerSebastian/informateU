@@ -1,10 +1,9 @@
 <template>
   <div class="container">
-    <div class="columns is-centered">
-      <div class="column is-half">
-        <!-- Profile Section -->
+    <div class="columns">
+      <!-- Profile Section -->
+      <div class="column is-one-third">
         <div class="profile-section">
-          <!-- Profile Picture -->
           <figure class="image is-128x128 is-centered">
             <img
               class="is-rounded"
@@ -21,8 +20,6 @@
           </figure>
           <p class="help is-danger">Foto de perfil</p>
         </div>
-
-        <!-- Form Fields Section -->
         <div class="form-section">
           <div class="columns">
             <div class="column">
@@ -60,7 +57,6 @@
               </div>
             </div>
           </div>
-          <!-- Subject Dropdown -->
           <div class="columns">
             <div class="column">
               <div class="field">
@@ -95,7 +91,6 @@
               </div>
             </div>
           </div>
-          <!-- Message Textarea -->
           <div class="field">
             <label class="label has-text-white">Descripción</label>
             <div class="control">
@@ -106,8 +101,6 @@
               ></textarea>
             </div>
           </div>
-
-          <!-- Submit, Cancel, and Edit Buttons -->
           <div class="field is-grouped">
             <div class="control">
               <button
@@ -125,14 +118,57 @@
           </div>
         </div>
       </div>
+
+      <!-- noticias -->
+      <div class="column is-two-thirds">
+        <div class="news-container">
+          <div v-for="news in userNews" :key="news.id" class="news-card">
+            <div class="card">
+              <div class="card-image">
+                <figure class="image is-4by3">
+                  <img
+                    v-if="isImage(news.mediaUrl)"
+                    :src="news.mediaUrl"
+                    alt="Imagen de la noticia"
+                  />
+                </figure>
+              </div>
+              <div class="card-content">
+                <p class="title">{{ news.title }}</p>
+                <p class="subtitle">{{ news.author }}</p>
+                <div class="content">{{ news.description }}</div>
+                <time>{{ news.timestamp.toDate().toLocaleDateString() }}</time>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  getDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { auth } from "../firebase";
+
+interface News {
+  id: string;
+  mediaUrl: string;
+  title: string;
+  author: string;
+  description: string;
+  timestamp: firebase.firestore.Timestamp;
+}
 
 const profileImage = ref(
   "https://bulma.io/assets/images/placeholders/128x128.png"
@@ -144,6 +180,7 @@ const email = ref("");
 const city = ref("");
 const program = ref("");
 const description = ref("");
+const userNews = ref<News[]>([]);
 
 const userId = auth.currentUser?.uid;
 
@@ -157,7 +194,6 @@ const onFileChange = (event: Event) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       profileImage.value = e.target?.result as string;
-      // Aquí puedes agregar la lógica para subir la imagen a Firebase Storage
     };
     reader.readAsDataURL(file);
   }
@@ -167,7 +203,6 @@ const onSubmit = async () => {
   if (!userId) return;
 
   try {
-    // Actualizar los datos del usuario en Firestore
     const userDoc = doc(getFirestore(), "users", userId);
     await updateDoc(userDoc, {
       username: username.value,
@@ -186,7 +221,6 @@ const onEdit = () => {
   isDisabled.value = false;
 };
 
-// Cargar datos del usuario al montar el componente
 onMounted(async () => {
   if (!userId) return;
 
@@ -200,37 +234,54 @@ onMounted(async () => {
       city.value = data.city || "";
       program.value = data.program || "";
       description.value = data.description || "";
-      // Aquí deberías cargar la foto de perfil si la has guardado en algún lugar
     }
+
+    const newsCollection = collection(getFirestore(), "news");
+    const q = query(newsCollection, where("authorId", "==", userId));
+    const querySnapshot = await getDocs(q);
+
+    userNews.value = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      mediaUrl: doc.data().mediaUrl,
+      title: doc.data().title,
+      author: doc.data().author,
+      description: doc.data().description,
+      timestamp: doc.data().timestamp,
+    })) as News[];
   } catch (error) {
-    console.error("Error al cargar el perfil:", error);
+    console.error("Error al cargar el perfil y noticias:", error);
   }
 });
+
+const isImage = (url: string) => {
+  return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
+};
 </script>
 
 <style scoped>
-.image.is-centered {
-  margin: 0 auto;
+.container {
+  padding: 20px;
 }
 
 .profile-section {
-  text-align: center;
-  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
-.input.is-success {
-  border-color: #27ae60;
+.news-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
-.input.is-danger {
-  border-color: #e74c3c;
+.news-card {
+  flex: 1 1 calc(33.333% - 20px);
+  box-sizing: border-box;
 }
 
-.help.is-success {
-  color: #27ae60;
-}
-
-.help.is-danger {
-  color: #e74c3c;
+.card {
+  width: 100%;
 }
 </style>
