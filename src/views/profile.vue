@@ -7,7 +7,7 @@
           <figure class="image is-128x128 is-centered">
             <img
               class="is-rounded"
-              :src="profileImage"
+              :src="perfilImg"
               @click="selectImage"
               style="cursor: pointer"
             />
@@ -137,7 +137,6 @@
                 <p class="title">{{ news.title }}</p>
                 <p class="subtitle">{{ news.author }}</p>
                 <div class="content">{{ news.description }}</div>
-                <time>{{ news.timestamp.toDate().toLocaleDateString() }}</time>
               </div>
             </div>
           </div>
@@ -160,6 +159,8 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { auth } from "../firebase";
+import firebase from "firebase/compat/app";
+import "firebase/compat/storage";
 
 interface News {
   id: string;
@@ -181,6 +182,7 @@ const city = ref("");
 const program = ref("");
 const description = ref("");
 const userNews = ref<News[]>([]);
+const perfilImg = ref(profileImage.value);
 
 const userId = auth.currentUser?.uid;
 
@@ -188,14 +190,21 @@ const selectImage = () => {
   fileInput.value?.click();
 };
 
-const onFileChange = (event: Event) => {
+const onFileChange = async (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0];
   if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      profileImage.value = e.target?.result as string;
-    };
-    reader.readAsDataURL(file);
+    const storageRef = firebase.storage().ref();
+    const profileImageRef = storageRef.child(
+      `profile_images/${userId}/${file.name}`
+    );
+
+    try {
+      const snapshot = await profileImageRef.put(file);
+      const downloadURL = await snapshot.ref.getDownloadURL();
+      perfilImg.value = downloadURL;
+    } catch (error) {
+      console.error("Error al subir la imagen:", error);
+    }
   }
 };
 
@@ -210,6 +219,7 @@ const onSubmit = async () => {
       city: city.value,
       program: program.value,
       description: description.value,
+      perfilImg: perfilImg.value,
     });
     isDisabled.value = true;
   } catch (error) {
@@ -234,54 +244,43 @@ onMounted(async () => {
       city.value = data.city || "";
       program.value = data.program || "";
       description.value = data.description || "";
+      perfilImg.value = data.perfilImg || profileImage.value;
     }
 
     const newsCollection = collection(getFirestore(), "news");
-    const q = query(newsCollection, where("authorId", "==", userId));
-    const querySnapshot = await getDocs(q);
-
-    userNews.value = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      mediaUrl: doc.data().mediaUrl,
-      title: doc.data().title,
-      author: doc.data().author,
-      description: doc.data().description,
-      timestamp: doc.data().timestamp,
-    })) as News[];
+    const userNewsQuery = query(newsCollection, where("userId", "==", userId));
+    const querySnapshot = await getDocs(userNewsQuery);
+    const newsData: News[] = [];
+    querySnapshot.forEach((doc) => {
+      const newsItem = doc.data() as News;
+      newsData.push({ ...newsItem, id: doc.id });
+    });
+    userNews.value = newsData;
   } catch (error) {
-    console.error("Error al cargar el perfil y noticias:", error);
+    console.error("Error al obtener los datos del perfil:", error);
   }
 });
 
 const isImage = (url: string) => {
-  return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
+  return /\.(jpg|jpeg|png|gif|bmp)$/i.test(url);
 };
 </script>
 
 <style scoped>
-.container {
-  padding: 20px;
-}
-
 .profile-section {
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
+  align-items: center;
 }
 
 .news-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  justify-content: center;
 }
 
 .news-card {
-  flex: 1 1 calc(33.333% - 20px);
-  box-sizing: border-box;
-}
-
-.card {
-  width: 100%;
+  width: 300px;
+  margin: 1rem;
 }
 </style>

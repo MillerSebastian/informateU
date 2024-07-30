@@ -2,7 +2,14 @@
   <div class="card">
     <div class="card-image">
       <figure class="image is-4by3">
-        <img :src="news.imageUrl" alt="Imagen de la noticia" />
+        <div v-if="news.imageUrl">
+          <img :src="news.imageUrl" alt="Imagen de la noticia" />
+        </div>
+        <div v-else>
+          <video width="320" height="240" controls>
+            <source :src="news.videoUrl" type="video/mp4" />
+          </video>
+        </div>
       </figure>
     </div>
     <div class="card-content">
@@ -51,6 +58,7 @@ interface News {
   author: string;
   description: string;
   timestamp: any;
+  videoUrl: string;
 }
 
 const props = defineProps<{
