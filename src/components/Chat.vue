@@ -5,14 +5,14 @@
         <h2 class="title is-4">Usuarios</h2>
         <ul>
           <li
-            v-for="user in users"
+            v-for="user in filteredUsers"
             :key="user.id"
             @click="selectUser(user)"
             :class="{
               'is-active': selectedUser && selectedUser.id === user.id,
             }"
           >
-            {{ user.name }}
+            {{ user.email }}
           </li>
         </ul>
       </div>
@@ -20,11 +20,30 @@
     <div class="column">
       <div class="box">
         <h2 class="title is-4">
-          Chat con {{ selectedUser ? selectedUser.name : "..." }}
+          Chat con
+          {{
+            selectedUser
+              ? selectedUser.firstName + " " + selectedUser.lastName
+              : "..."
+          }}
         </h2>
         <div class="messages">
           <div v-for="message in messages" :key="message.id" class="message">
-            <strong>{{ message.author }}:</strong> {{ message.text }}
+            <div class="message-container">
+              <div class="message-content">
+                <strong>{{ message.author }}:</strong> {{ message.text }}
+              </div>
+              <button
+                v-if="message.senderId === auth.currentUser?.uid"
+                @click="deleteMessage(message.id)"
+                class="delete-button"
+                title="Eliminar mensaje"
+              >
+                <span class="icon is-small">
+                  <i class="fas fa-trash"></i>
+                </span>
+              </button>
+            </div>
           </div>
         </div>
         <form @submit.prevent="sendMessage">
@@ -41,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import {
   collection,
   addDoc,
@@ -50,12 +69,22 @@ import {
   onSnapshot,
   Timestamp,
   getDocs,
+  deleteDoc,
+  doc,
+  where,
 } from "firebase/firestore";
-import { db } from "@/firebase";
+import { db, auth } from "@/firebase";
 
+// Interfaces actualizadas para reflejar la estructura de datos del registro
 interface User {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  program: string;
+  city: string;
+  documentType: string;
+  birthDate: string;
 }
 
 interface Message {
@@ -63,22 +92,43 @@ interface Message {
   text: string;
   author: string;
   timestamp: any;
-  userId: string;
+  senderId: string;
+  receiverId: string;
 }
 
 const users = ref<User[]>([]);
 const selectedUser = ref<User | null>(null);
 const messages = ref<Message[]>([]);
 const newMessage = ref<string>("");
+const currentUser = ref<User | null>(null);
 
 const usersCollection = collection(db, "users");
 const messagesCollection = collection(db, "messages");
+
+// Computed property para filtrar al usuario actual de la lista
+const filteredUsers = computed(() => {
+  if (!auth.currentUser) return users.value;
+  return users.value.filter((user) => user.id !== auth.currentUser?.uid);
+});
 
 const loadUsers = async () => {
   const usersSnapshot = await getDocs(usersCollection);
   users.value = usersSnapshot.docs.map(
     (doc) => ({ id: doc.id, ...doc.data() } as User)
   );
+
+  // Obtener el usuario actual
+  if (auth.currentUser) {
+    const currentUserDoc = usersSnapshot.docs.find(
+      (doc) => doc.id === auth.currentUser?.uid
+    );
+    if (currentUserDoc) {
+      currentUser.value = {
+        id: currentUserDoc.id,
+        ...currentUserDoc.data(),
+      } as User;
+    }
+  }
 };
 
 const selectUser = (user: User) => {
@@ -87,24 +137,58 @@ const selectUser = (user: User) => {
 };
 
 const loadMessages = () => {
-  if (!selectedUser.value) return;
+  if (!selectedUser.value || !auth.currentUser) return;
+
+  // Consulta para obtener mensajes ordenados por timestamp
   const messagesQuery = query(messagesCollection, orderBy("timestamp"));
+
   onSnapshot(messagesQuery, (snapshot) => {
     messages.value = snapshot.docs
       .map((doc) => ({ id: doc.id, ...doc.data() } as Message))
-      .filter((message) => message.userId === selectedUser.value?.id);
+      .filter((message) => {
+        // Filtrar solo mensajes entre el usuario actual y el usuario seleccionado
+        const currentUserID = auth.currentUser?.uid;
+        const selectedUserID = selectedUser.value?.id;
+
+        return (
+          // Mensajes enviados por el usuario actual al usuario seleccionado
+          (message.senderId === currentUserID &&
+            message.receiverId === selectedUserID) ||
+          // Mensajes enviados por el usuario seleccionado al usuario actual
+          (message.senderId === selectedUserID &&
+            message.receiverId === currentUserID)
+        );
+      });
   });
 };
 
 const sendMessage = async () => {
-  if (newMessage.value.trim() === "" || !selectedUser.value) return;
+  if (
+    newMessage.value.trim() === "" ||
+    !selectedUser.value ||
+    !currentUser.value ||
+    !auth.currentUser
+  )
+    return;
+
   await addDoc(messagesCollection, {
     text: newMessage.value,
-    author: "Tu Nombre", // Aquí podrías usar el nombre del usuario autenticado
+    author: `${currentUser.value.firstName} ${currentUser.value.lastName}`,
     timestamp: Timestamp.now(),
-    userId: selectedUser.value.id,
+    senderId: auth.currentUser.uid,
+    receiverId: selectedUser.value.id,
   });
+
   newMessage.value = "";
+};
+
+const deleteMessage = async (messageId: string) => {
+  try {
+    await deleteDoc(doc(db, "messages", messageId));
+    console.log("Mensaje eliminado correctamente");
+  } catch (error) {
+    console.error("Error al eliminar el mensaje:", error);
+  }
 };
 
 onMounted(loadUsers);
@@ -143,6 +227,30 @@ li.is-active {
 
 .message {
   margin-bottom: 10px;
+}
+
+.message-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.message-content {
+  flex-grow: 1;
+}
+
+.delete-button {
+  background-color: transparent;
+  border: none;
+  color: #ff3860;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0 5px;
+  opacity: 0.6;
+}
+
+.delete-button:hover {
+  opacity: 1;
 }
 
 form {

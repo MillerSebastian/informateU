@@ -1,9 +1,10 @@
 <template>
-  <div class="news-page">
+  <div class="game-page">
     <h1 class="title">Noticias</h1>
-
     <div class="add-news-button">
-      <button class="button is-danger" @click="showModal = true">+</button>
+      <button class="button is-button-modal" @click="showModal = true">
+        +
+      </button>
     </div>
 
     <AddNewsModal
@@ -12,7 +13,7 @@
       category="news"
     />
 
-    <div class="news-feed">
+    <div class="game-feed">
       <NewsCard
         v-for="news in newsList"
         :key="news.id"
@@ -49,7 +50,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.news-page {
+.game-page {
   padding: 1rem;
 }
 
@@ -57,9 +58,13 @@ onMounted(() => {
   margin-bottom: 1rem;
 }
 
-.news-feed {
+.game-feed {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
+}
+.is-button-modal {
+  background-color: red;
+  color: black;
 }
 </style>

@@ -41,9 +41,11 @@
               <span class="file-icon">
                 <i class="fas fa-upload"></i>
               </span>
-              <span class="file-label">Choose a file…</span>
+              <span class="file-label">Elige un archivo…</span>
             </span>
-            <span class="file-name">{{ fileName || "No file chosen" }}</span>
+            <span class="file-name">{{
+              fileName || "No se ha elegido archivo"
+            }}</span>
           </label>
         </div>
       </section>
@@ -93,14 +95,18 @@ const props = defineProps({
 const title = ref("");
 const description = ref("");
 const mediaUrl = ref("");
-const imgFile = ref<File | null>(null);
+const fileType = ref<string>("");
+const file = ref<File | null>(null);
 const fileName = ref<string>("");
 
 const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files[0]) {
-    imgFile.value = target.files[0];
+    file.value = target.files[0];
     fileName.value = target.files[0].name;
+    fileType.value = target.files[0].type.startsWith("video")
+      ? "video"
+      : "image";
   }
 };
 
@@ -114,20 +120,20 @@ const addNews = async () => {
       return;
     }
 
-    if (imgFile.value) {
+    if (file.value) {
       const storageReference = storageRef(
         storage,
-        `uploads/${imgFile.value.name}`
+        `uploads/${file.value.name}`
       );
-      await uploadBytes(storageReference, imgFile.value);
+      await uploadBytes(storageReference, file.value);
       mediaUrl.value = await getDownloadURL(storageReference);
     }
 
     await addDoc(collection(db, props.category), {
       title: title.value,
       description: description.value,
-      imageUrl: mediaUrl.value,
-      videoUrl: mediaUrl.value,
+      mediaUrl: mediaUrl.value,
+      fileType: fileType.value,
       author: user.displayName || user.email,
       timestamp: Timestamp.now(),
     });

@@ -111,7 +111,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { auth, db } from "../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore"; // Importamos setDoc y doc en lugar de addDoc
+import { doc, setDoc } from "firebase/firestore";
 
 const router = useRouter();
 
@@ -133,7 +133,6 @@ const register = async () => {
   }
 
   try {
-    // Crear un usuario en Firebase Authentication
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email.value,
@@ -141,7 +140,6 @@ const register = async () => {
     );
     const user = userCredential.user;
 
-    // Guardar datos del usuario en Firestore usando setDoc y el uid del usuario
     await setDoc(doc(db, "users", user.uid), {
       firstName: firstName.value,
       lastName: lastName.value,
@@ -155,7 +153,6 @@ const register = async () => {
     router.push("/");
   } catch (error) {
     console.error("Error al registrarse:", error);
-    // Consider adding user-friendly error handling here
   }
 };
 </script>

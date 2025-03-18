@@ -1,13 +1,14 @@
+<!-- NewsCard.vue -->
 <template>
   <div class="card">
     <div class="card-image">
       <figure class="image is-4by3">
-        <div v-if="news.imageUrl">
-          <img :src="news.imageUrl" alt="Imagen de la noticia" />
+        <div v-if="news.fileType === 'image'">
+          <img :src="news.mediaUrl" alt="Imagen de la noticia" />
         </div>
-        <div v-else>
-          <video width="320" height="240" controls>
-            <source :src="news.videoUrl" type="video/mp4" />
+        <div v-else-if="news.fileType === 'video'" class="video-container">
+          <video controls>
+            <source :src="news.mediaUrl" type="video/mp4" />
           </video>
         </div>
       </figure>
@@ -16,9 +17,12 @@
       <div class="media">
         <div class="media-left">
           <figure class="image is-48x48">
+            <!-- Directly fetch profile image using userId -->
             <img
-              src="https://bulma.io/assets/images/placeholders/96x96.png"
-              alt="Placeholder image"
+              :src="authorProfileImage"
+              alt="Imagen de perfil del autor"
+              class="is-rounded"
+              @error="handleImageError"
             />
           </figure>
         </div>
@@ -30,9 +34,6 @@
 
       <div class="content">
         <p :class="{ 'is-clipped': !isExpanded }">{{ news.description }}</p>
-        <button class="button is-small is-text" @click="toggleReadMore">
-          {{ isExpanded ? "Leer menos" : "Leer más" }}
-        </button>
         <br />
         <time :datetime="news.timestamp">{{ formattedDate }}</time>
       </div>
@@ -47,24 +48,49 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { doc, deleteDoc } from "firebase/firestore";
+import { ref, computed, onMounted } from "vue";
+import { doc, deleteDoc, getDoc } from "firebase/firestore";
 import { db } from "@/firebase";
 
 interface News {
   id: string;
-  imageUrl: string;
+  mediaUrl: string;
   title: string;
   author: string;
   description: string;
   timestamp: any;
-  videoUrl: string;
+  fileType: string;
+  userId: string; // Ensure this exists in your data
 }
 
 const props = defineProps<{
   news: News;
   category: string;
 }>();
+
+const authorProfileImage = ref(
+  "https://bulma.io/assets/images/placeholders/96x96.png"
+);
+
+// Fetch the author's profile image
+onMounted(async () => {
+  if (props.news.userId) {
+    try {
+      const userDoc = doc(db, "users", props.news.userId);
+      const docSnap = await getDoc(userDoc);
+      if (docSnap.exists() && docSnap.data().perfilImg) {
+        authorProfileImage.value = docSnap.data().perfilImg;
+      }
+    } catch (error) {
+      console.error("Error al obtener la imagen de perfil:", error);
+    }
+  }
+});
+
+// Handle image load errors
+const handleImageError = (event) => {
+  event.target.src = "https://bulma.io/assets/images/placeholders/96x96.png";
+};
 
 const formattedDate = computed(() => {
   const date = new Date(props.news.timestamp.seconds * 1000);
@@ -87,16 +113,12 @@ const isExpanded = ref(false);
 const toggleReadMore = () => {
   isExpanded.value = !isExpanded.value;
 };
-
-const editNews = (news: News) => {
-  console.log("Editar noticia:", news);
-};
 </script>
 
 <style scoped>
 .card {
   margin-bottom: 1rem;
-  max-width: 400px; /* Ajusta este valor según tus necesidades */
+  max-width: 400px;
 }
 
 .card-image img {
@@ -105,22 +127,32 @@ const editNews = (news: News) => {
   height: auto;
 }
 
+.video-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .content {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  /* -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3; Número de líneas antes de truncar el texto */
 }
 
 .is-clipped {
-  /* -webkit-line-clamp: 3; Número de líneas antes de truncar el texto */
-  max-height: 4.5em; /* Ajusta esto según el número de líneas y el tamaño de la fuente */
+  max-height: 4.5em;
 }
 
 .buttons {
   display: flex;
   justify-content: space-between;
   margin-top: 1rem;
+}
+
+.is-rounded {
+  border-radius: 50%;
+  object-fit: cover;
+  width: 48px;
+  height: 48px;
 }
 </style>

@@ -8,16 +8,27 @@
             <img
               class="is-rounded"
               :src="perfilImg"
-              @click="selectImage"
-              style="cursor: pointer"
-            />
-            <input
-              type="file"
-              ref="fileInput"
-              style="display: none"
-              @change="onFileChange"
+              alt="Imagen de perfil"
+              :disabled="isDisabled"
             />
           </figure>
+          <div class="field">
+            <div class="control">
+              <button
+                class="button is-link"
+                @click="selectImage"
+                :disabled="isDisabled"
+              >
+                Cambiar Imagen de Perfil
+              </button>
+              <input
+                type="file"
+                ref="fileInput"
+                style="display: none"
+                @change="onFileChange"
+              />
+            </div>
+          </div>
           <p class="help is-danger">Foto de perfil</p>
         </div>
         <div class="form-section">
@@ -82,7 +93,7 @@
                     <select v-model="program" :disabled="isDisabled">
                       <option>Ing. Sistemas</option>
                       <option>Ing. Industrial</option>
-                      <option>enfermería</option>
+                      <option>Enfermería</option>
                       <option>Logística Portuaria</option>
                       <option>Odontología</option>
                     </select>
@@ -119,26 +130,11 @@
         </div>
       </div>
 
-      <!-- noticias -->
+      <!-- Noticias -->
       <div class="column is-two-thirds">
         <div class="news-container">
           <div v-for="news in userNews" :key="news.id" class="news-card">
-            <div class="card">
-              <div class="card-image">
-                <figure class="image is-4by3">
-                  <img
-                    v-if="isImage(news.mediaUrl)"
-                    :src="news.mediaUrl"
-                    alt="Imagen de la noticia"
-                  />
-                </figure>
-              </div>
-              <div class="card-content">
-                <p class="title">{{ news.title }}</p>
-                <p class="subtitle">{{ news.author }}</p>
-                <div class="content">{{ news.description }}</div>
-              </div>
-            </div>
+            <NewsCard :news="news" category="news" />
           </div>
         </div>
       </div>
@@ -158,9 +154,13 @@ import {
   getDoc,
   updateDoc,
 } from "firebase/firestore";
-import { auth } from "../firebase";
-import firebase from "firebase/compat/app";
-import "firebase/compat/storage";
+import { auth, storage } from "../firebase";
+import { getAuth } from "firebase/auth";
+import {
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
 
 interface News {
   id: string;
@@ -168,12 +168,10 @@ interface News {
   title: string;
   author: string;
   description: string;
-  timestamp: firebase.firestore.Timestamp;
+  timestamp: any;
 }
 
-const profileImage = ref(
-  "https://bulma.io/assets/images/placeholders/128x128.png"
-);
+const profileImage = ref("");
 const fileInput = ref<HTMLInputElement | null>(null);
 const isDisabled = ref(true);
 const username = ref("");
@@ -184,7 +182,7 @@ const description = ref("");
 const userNews = ref<News[]>([]);
 const perfilImg = ref(profileImage.value);
 
-const userId = auth.currentUser?.uid;
+const userId = getAuth().currentUser?.uid;
 
 const selectImage = () => {
   fileInput.value?.click();
@@ -192,19 +190,33 @@ const selectImage = () => {
 
 const onFileChange = async (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0];
-  if (file) {
-    const storageRef = firebase.storage().ref();
-    const profileImageRef = storageRef.child(
+
+  if (file && userId) {
+    const storageReference = storageRef(
+      storage,
       `profile_images/${userId}/${file.name}`
     );
-
     try {
-      const snapshot = await profileImageRef.put(file);
-      const downloadURL = await snapshot.ref.getDownloadURL();
+      await uploadBytes(storageReference, file);
+      const downloadURL = await getDownloadURL(storageReference);
       perfilImg.value = downloadURL;
+      await updateProfileImage(downloadURL); // Actualizar la URL de la imagen en Firestore
     } catch (error) {
       console.error("Error al subir la imagen:", error);
     }
+  }
+};
+
+const updateProfileImage = async (downloadURL: string) => {
+  if (!userId) return;
+
+  try {
+    const userDoc = doc(getFirestore(), "users", userId);
+    await updateDoc(userDoc, {
+      perfilImg: downloadURL,
+    });
+  } catch (error) {
+    console.error("Error al actualizar la imagen de perfil:", error);
   }
 };
 
@@ -219,7 +231,6 @@ const onSubmit = async () => {
       city: city.value,
       program: program.value,
       description: description.value,
-      perfilImg: perfilImg.value,
     });
     isDisabled.value = true;
   } catch (error) {
