@@ -4,7 +4,7 @@
     style="height: 100vh"
   >
     <div style="width: 50%">
-      <img src="/americana logo.png" alt="Logo" class="logo-image" />
+      <img src="/logo2.png" alt="Logo" class="logo-image" />
       <h1 class="title has-text-centered">Iniciar Sesión</h1>
       <form @submit.prevent="login">
         <div class="field">
