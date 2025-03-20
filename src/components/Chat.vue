@@ -203,9 +203,75 @@ const colorPalette = [
   "#8C3AFF",
   "#FFD13A",
   "#3AFFD1",
+  "#F5A533",
+  "#33FFCC",
+  "#F533FF",
+  "#FF3357",
+  "#5733FF",
+  "#33FF92",
+  "#FF8CFF",
+  "#C533FF",
+  "#33FF57",
+  "#FF335B",
+  "#FF8C80",
+  "#33F5A8",
+  "#8CFF33",
+  "#A8FF33",
+  "#33FF72",
+  "#FF6333",
+  "#FF57E5",
+  "#33C5FF",
+  "#F7FF33",
+  "#F533D1",
+  "#FF6B33",
+  "#C533A8",
+  "#6CFF33",
+  "#33FF6C",
+  "#FF3A8C",
+  "#9BFF33",
+  "#6B33FF",
+  "#33FF48",
+  "#A8FF8C",
+  "#FF91A8",
+  "#33FFEC",
+  "#FF336B",
+  "#F5FF33",
+  "#FF33B3",
+  "#FF3A8C",
+  "#FF6342",
+  "#4BFF33",
+  "#B9FF33",
+  "#FF339D",
+  "#C733FF",
+  "#F533FF",
+  "#FF33F7",
+  "#8CFFFB",
+  "#FF33C5",
+  "#A8336B",
+  "#B333FF",
+  "#3A8CFF",
+  "#FF3333",
+  "#33FFFD",
+  "#FF8CF3",
+  "#7CFF33",
+  "#FF33AA",
+  "#C8FF33",
+  "#FF7F33",
+  "#33D1FF",
+  "#8CFF57",
+  "#FF33F0",
+  "#33FF97",
+  "#8CFFCC",
+  "#33C9FF",
+  "#FF3377",
+  "#A8FF75",
+  "#FF75A8",
+  "#3AFF5C",
+  "#A833FF",
+  "#D8FF33",
 ];
 
-// verificaion de usurios "si existe o no mostrarlo"
+// Computed property para filtrar al usuario actual y verificar existencia
 const filteredUsers = computed(() => {
   if (!auth.currentUser) return [];
   return users.value.filter(
@@ -217,7 +283,7 @@ const filteredUsers = computed(() => {
   );
 });
 
-// funcion para generar colores para los usuarios
+// Función para generar un color consistente para cada usuario
 const getUserColor = (userId: string): string => {
   if (!userColors.value[userId]) {
     const hashCode = userId.split("").reduce((acc, char) => {
@@ -250,7 +316,6 @@ const loadUsers = async () => {
     for (const doc of usersSnapshot.docs) {
       const userData = doc.data() as User;
 
-      // Verificar que el usuario tenga TODOS los campos necesarios
       if (
         userData.firstName &&
         userData.lastName &&
@@ -321,11 +386,9 @@ const calculateUnreadMessages = async () => {
   for (const user of users.value) {
     if (user.id === auth.currentUser.uid) continue;
 
-    // Buscar el ultimo timestamp leído para este usuario
     const lastReadTimestamp =
       readStatus.value[user.id]?.lastReadTimestamp || new Timestamp(0, 0);
 
-    // Consultar mensajes no leidos
     const unreadQuery = query(
       messagesCollection,
       where("senderId", "==", user.id),
@@ -383,7 +446,6 @@ const loadMessages = () => {
     messages.value = snapshot.docs
       .map((doc) => ({ id: doc.id, ...doc.data() } as Message))
       .filter((message) => {
-        // Filtrar solo mensajes entre el usuario actual y el usuario seleccionado
         const currentUserID = auth.currentUser?.uid;
         const selectedUserID = selectedUser.value?.id;
 
@@ -404,6 +466,8 @@ const setupGlobalMessagesListener = () => {
 
   const messagesQuery = query(messagesCollection, orderBy("timestamp"));
 
+  const startListeningTime = Timestamp.now();
+
   onSnapshot(messagesQuery, (snapshot) => {
     snapshot.docChanges().forEach((change) => {
       if (change.type === "added") {
@@ -411,7 +475,8 @@ const setupGlobalMessagesListener = () => {
 
         if (
           message.receiverId === auth.currentUser?.uid &&
-          message.senderId !== auth.currentUser?.uid
+          message.senderId !== auth.currentUser?.uid &&
+          message.timestamp.toDate() > startListeningTime.toDate()
         ) {
           playNotificationSound();
 
@@ -645,7 +710,6 @@ li.is-active {
 .message-content {
   word-break: break-word;
   line-height: 1.4;
-  color: black;
 }
 
 .delete-button {

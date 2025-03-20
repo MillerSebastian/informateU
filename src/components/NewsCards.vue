@@ -1,6 +1,9 @@
-<!-- NewsCard.vue -->
 <template>
-  <div class="card">
+  <div
+    class="card news-card"
+    @mouseenter="hover = true"
+    @mouseleave="hover = false"
+  >
     <div class="card-image">
       <figure class="image is-4by3">
         <div v-if="news.fileType === 'image'">
@@ -13,11 +16,11 @@
         </div>
       </figure>
     </div>
+
     <div class="card-content">
       <div class="media">
         <div class="media-left">
           <figure class="image is-48x48">
-            <!-- Directly fetch profile image using userId -->
             <img
               :src="authorProfileImage"
               alt="Imagen de perfil del autor"
@@ -60,7 +63,7 @@ interface News {
   description: string;
   timestamp: any;
   fileType: string;
-  userId: string; // Ensure this exists in your data
+  userId: string;
 }
 
 const props = defineProps<{
@@ -68,26 +71,25 @@ const props = defineProps<{
   category: string;
 }>();
 
+const hover = ref(false);
 const authorProfileImage = ref(
   "https://bulma.io/assets/images/placeholders/96x96.png"
 );
 
-// Fetch the author's profile image
 onMounted(async () => {
-  if (props.news.userId) {
-    try {
+  try {
+    if (props.news.userId) {
       const userDoc = doc(db, "users", props.news.userId);
       const docSnap = await getDoc(userDoc);
       if (docSnap.exists() && docSnap.data().perfilImg) {
         authorProfileImage.value = docSnap.data().perfilImg;
       }
-    } catch (error) {
-      console.error("Error al obtener la imagen de perfil:", error);
     }
+  } catch (error) {
+    console.error("Error al obtener la imagen de perfil:", error);
   }
 });
 
-// Handle image load errors
 const handleImageError = (event) => {
   event.target.src = "https://bulma.io/assets/images/placeholders/96x96.png";
 };
@@ -110,27 +112,25 @@ const deleteNews = async (id: string) => {
 };
 
 const isExpanded = ref(false);
-const toggleReadMore = () => {
-  isExpanded.value = !isExpanded.value;
-};
 </script>
 
 <style scoped>
 .card {
   margin-bottom: 1rem;
   max-width: 400px;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
-.card-image img {
+.news-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-image img,
+.video-container video {
   object-fit: cover;
   width: 100%;
   height: auto;
-}
-
-.video-container video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .content {

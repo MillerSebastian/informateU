@@ -22,6 +22,7 @@
         <div class="control has-text-centered">
           <button
             class="button is-fullwidth"
+            :class="{ 'is-loading': isLoading }"
             style="background-color: yellow; color: black"
           >
             Iniciar Sesión
@@ -33,20 +34,65 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { auth } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { Notyf } from "notyf";
+import "notyf/notyf.min.css";
 
 const email = ref("");
 const password = ref("");
 const router = useRouter();
+const isLoading = ref(false);
+let notyf: Notyf;
+
+onMounted(() => {
+  notyf = new Notyf({
+    duration: 3000,
+    position: { x: "right", y: "bottom" },
+    types: [
+      {
+        type: "success",
+        background: "green",
+        icon: {
+          className: "fas fa-check-circle",
+          tagName: "i",
+          color: "white",
+        },
+      },
+      {
+        type: "error",
+        background: "red",
+        icon: {
+          className: "fas fa-times-circle",
+          tagName: "i",
+          color: "white",
+        },
+      },
+    ],
+  });
+});
 
 const login = async () => {
+  if (!email.value || !password.value) {
+    notyf.error("Por favor, completa todos los campos");
+    return;
+  }
+
+  isLoading.value = true;
+
   try {
     await signInWithEmailAndPassword(auth, email.value, password.value);
+    notyf.success("Inicio de sesión exitoso");
     router.push("/");
-  } catch (error) {}
+  } catch (error: any) {
+    let errorMessage = "Error al iniciar sesión";
+
+    notyf.error(errorMessage);
+  } finally {
+    isLoading.value = false;
+  }
 };
 </script>
 
