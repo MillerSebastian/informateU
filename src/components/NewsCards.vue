@@ -54,6 +54,8 @@
 import { ref, computed, onMounted } from "vue";
 import { doc, deleteDoc, getDoc } from "firebase/firestore";
 import { db } from "@/firebase";
+import { Notyf } from "notyf";
+import "notyf/notyf.min.css";
 
 interface News {
   id: string;
@@ -90,6 +92,35 @@ onMounted(async () => {
   }
 });
 
+let notyf: Notyf;
+
+onMounted(() => {
+  notyf = new Notyf({
+    duration: 3000,
+    position: { x: "right", y: "bottom" },
+    types: [
+      {
+        type: "success",
+        background: "green",
+        icon: {
+          className: "fas fa-check-circle",
+          tagName: "i",
+          color: "white",
+        },
+      },
+      {
+        type: "error",
+        background: "red",
+        icon: {
+          className: "fas fa-times-circle",
+          tagName: "i",
+          color: "white",
+        },
+      },
+    ],
+  });
+});
+
 const handleImageError = (event) => {
   event.target.src = "https://bulma.io/assets/images/placeholders/96x96.png";
 };
@@ -105,9 +136,10 @@ const formattedDate = computed(() => {
 const deleteNews = async (id: string) => {
   try {
     await deleteDoc(doc(db, props.category, id));
-    alert("Noticia borrada exitosamente");
+    notyf.success("Noticia eliminada exitosamente");
   } catch (error) {
-    console.error("Error al borrar la noticia:", error);
+    notyf.error("Error sl elimnar esta noticia");
+    return;
   }
 };
 

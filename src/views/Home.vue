@@ -40,7 +40,7 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase"; // Asegúrate de ajustar la ruta de importación según tu configuración
+import { db } from "../firebase";
 
 export default defineComponent({
   name: "Home",

@@ -54,17 +54,21 @@
           class="button is-success"
           style="background-color: yellow; color: black"
           @click="addNews"
+          :disabled="isLoading"
         >
-          Añadir
+          <span v-if="isLoading">Añadiendo...</span>
+          <span v-else>Añadir</span>
         </button>
-        <button class="button ml-2" @click="closeModal">Cancelar</button>
+        <button class="button ml-2" @click="closeModal" :disabled="isLoading">
+          Cancelar
+        </button>
       </footer>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import {
   storage,
   ref as storageRef,
@@ -76,6 +80,8 @@ import {
   getDownloadURL,
 } from "@/firebase";
 import { getAuth } from "firebase/auth";
+import { Notyf } from "notyf";
+import "notyf/notyf.min.css";
 
 const props = defineProps({
   isActive: {
@@ -98,6 +104,8 @@ const mediaUrl = ref("");
 const fileType = ref<string>("");
 const file = ref<File | null>(null);
 const fileName = ref<string>("");
+const isLoading = ref(false);
+let notyf: Notyf;
 
 const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -110,20 +118,60 @@ const handleFileChange = (event: Event) => {
   }
 };
 
+onMounted(() => {
+  notyf = new Notyf({
+    duration: 3000,
+    position: { x: "right", y: "bottom" },
+    types: [
+      {
+        type: "success",
+        background: "green",
+        icon: {
+          className: "fas fa-check-circle",
+          tagName: "i",
+          color: "white",
+        },
+      },
+      {
+        type: "error",
+        background: "red",
+        icon: {
+          className: "fas fa-times-circle",
+          tagName: "i",
+          color: "white",
+        },
+      },
+    ],
+  });
+});
+
 const addNews = async () => {
+  if (!title.value.trim()) {
+    notyf.error("Por favor, ingresa un título para la noticia");
+    return;
+  }
+
+  if (!description.value.trim()) {
+    notyf.error("Por favor, ingresa una descripción para la noticia");
+    return;
+  }
+
+  isLoading.value = true;
+
   try {
     const auth = getAuth();
     const user = auth.currentUser;
 
     if (!user) {
-      console.error("Usuario no autenticado");
+      notyf.error("Usuario no autenticado");
+      isLoading.value = false;
       return;
     }
 
     if (file.value) {
       const storageReference = storageRef(
         storage,
-        `uploads/${file.value.name}`
+        `uploads/${Date.now()}_${file.value.name}`
       );
       await uploadBytes(storageReference, file.value);
       mediaUrl.value = await getDownloadURL(storageReference);
@@ -138,9 +186,21 @@ const addNews = async () => {
       timestamp: Timestamp.now(),
     });
 
+    notyf.success("Noticia añadida exitosamente");
+
+    title.value = "";
+    description.value = "";
+    mediaUrl.value = "";
+    fileType.value = "";
+    file.value = null;
+    fileName.value = "";
+
     props.closeModal();
   } catch (error) {
     console.error("Error al añadir noticia:", error);
+    notyf.error("Error al añadir la noticia. Inténtalo de nuevo.");
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>
@@ -164,5 +224,10 @@ const addNews = async () => {
 
 .select {
   width: 100%;
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 </style>
