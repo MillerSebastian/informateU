@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="main-container">
     <h1 class="title">Bienvenido a la Página Principal</h1>
     <div class="columns is-multiline">
       <div class="column is-one-third" v-for="news in newsList" :key="news.id">
@@ -83,13 +83,35 @@ export default defineComponent({
 });
 </script>
 
+<style>
+/* Aseguramos que el html y body tengan altura completa y permitan scroll */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto !important;
+}
+
+#app {
+  min-height: 100%;
+  position: relative;
+}
+</style>
+
 <style scoped>
-.container {
+.main-container {
   margin-top: 2rem;
+  margin-bottom: 2rem;
+  padding: 0 1.5rem;
+  /* Permitimos que el contenedor principal tenga scroll si es necesario */
+  overflow-y: auto;
 }
 
 .card {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .card-image img,
@@ -97,5 +119,14 @@ export default defineComponent({
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Aseguramos que las columnas tengan altura apropiada */
+.columns {
+  width: 100%;
+}
+
+.column {
+  display: flex;
 }
 </style>

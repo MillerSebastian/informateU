@@ -7,116 +7,91 @@
     
     <div class="registration-form-container">
       <div class="registration-form">
-        <h1 class="title has-text-centered">Registrarse</h1>
+        <h1 class="form-title">Registrarse</h1>
         <form @submit.prevent="register">
-          <!-- Personal information section -->
-          <div class="columns is-multiline">
-            <div class="column is-half">
-              <div class="field">
-                <label class="label">Nombre</label>
-                <div class="control">
-                  <input class="input" type="text" v-model="firstName" required />
-                </div>
-              </div>
+          <!-- Two columns layout for personal info -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Nombre</label>
+              <input class="form-input" type="text" v-model="firstName" required />
             </div>
-            <div class="column is-half">
-              <div class="field">
-                <label class="label">Apellido</label>
-                <div class="control">
-                  <input class="input" type="text" v-model="lastName" required />
-                </div>
-              </div>
+            <div class="form-group">
+              <label class="form-label">Apellido</label>
+              <input class="form-input" type="text" v-model="lastName" required />
             </div>
           </div>
 
-          <div class="field">
-            <label class="label">Email</label>
-            <div class="control">
-              <input class="input" type="email" v-model="email" required />
+          <!-- More compact layout for credential fields -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input class="form-input" type="email" v-model="email" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Contraseña</label>
+              <input class="form-input" type="password" v-model="password" required />
             </div>
           </div>
           
-          <div class="field">
-            <label class="label">Contraseña</label>
-            <div class="control">
-              <input class="input" type="password" v-model="password" required />
-            </div>
-          </div>
-          
-          <!-- Aligned select fields in equal columns -->
-          <div class="columns is-multiline">
-            <div class="column is-one-third">
-              <div class="field">
-                <label class="label">Programa</label>
-                <div class="control">
-                  <div class="select is-fullwidth">
-                    <select v-model="program" :disabled="isDisabled">
-                      <option>Ing. Sistemas</option>
-                      <option>Ing. Industrial</option>
-                      <option>Enfermería</option>
-                      <option>Logística Portuaria</option>
-                      <option>Odontología</option>
-                    </select>
-                  </div>
-                </div>
+          <!-- Three columns for select fields -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Programa</label>
+              <div class="custom-select">
+                <select v-model="program" :disabled="isDisabled">
+                  <option>Ing. Sistemas</option>
+                  <option>Ing. Industrial</option>
+                  <option>Enfermería</option>
+                  <option>Logística Portuaria</option>
+                  <option>Odontología</option>
+                </select>
               </div>
             </div>
             
-            <div class="column is-one-third">
-              <div class="field">
-                <label class="label">Ciudad</label>
-                <div class="control">
-                  <div class="select is-fullwidth">
-                    <select v-model="city" :disabled="isDisabled">
-                      <option>Barranquilla</option>
-                      <option>Cali</option>
-                      <option>Bogotá</option>
-                      <option>Cartagena de Indias</option>
-                      <option>Medellín</option>
-                    </select>
-                  </div>
-                </div>
+            <div class="form-group">
+              <label class="form-label">Ciudad</label>
+              <div class="custom-select">
+                <select v-model="city" :disabled="isDisabled">
+                  <option>Barranquilla</option>
+                  <option>Cali</option>
+                  <option>Bogotá</option>
+                  <option>Cartagena de Indias</option>
+                  <option>Medellín</option>
+                </select>
               </div>
             </div>
             
-            <div class="column is-one-third">
-              <div class="field">
-                <label class="label">Tipo de Documento</label>
-                <div class="control">
-                  <div class="select is-fullwidth">
-                    <select v-model="documentType" :disabled="isDisabled">
-                      <option>Cédula de Ciudadanía</option>
-                      <option>Tarjeta de Identidad</option>
-                      <option>Extranjera</option>
-                    </select>
-                  </div>
-                </div>
+            <div class="form-group">
+              <label class="form-label">Tipo de Documento</label>
+              <div class="custom-select">
+                <select v-model="documentType" :disabled="isDisabled">
+                  <option>Cédula de Ciudadanía</option>
+                  <option>Tarjeta de Identidad</option>
+                  <option>Extranjera</option>
+                </select>
               </div>
             </div>
           </div>
           
-          <div class="field">
-            <label class="label">Fecha de Nacimiento</label>
-            <div class="control">
-              <input class="input" type="date" v-model="birthDate" required />
-            </div>
+          <!-- Date field in its own row -->
+          <div class="form-group">
+            <label class="form-label">Fecha de Nacimiento</label>
+            <input class="form-input date-input" type="date" v-model="birthDate" required />
           </div>
           
-          <div class="field mt-4">
-            <div class="control">
-              <label class="checkbox">
-                <input type="checkbox" v-model="termsAccepted" required />
-                Acepto los
-                <a href="#" style="color: yellow">términos y condiciones</a>
-              </label>
-            </div>
+          <!-- Terms and conditions in its own row -->
+          <div class="form-group terms-container">
+            <label class="checkbox-label">
+              <input type="checkbox" v-model="termsAccepted" required />
+              <span class="checkmark"></span>
+              <span class="terms-text">Acepto los
+                <a href="#" class="terms-link">términos y condiciones</a>
+              </span>
+            </label>
           </div>
           
-          <div class="control has-text-centered mt-4">
-            <button
-              class="button is-fullwidth"
-              style="background-color: yellow; color: black"
-            >
+          <div class="form-group">
+            <button class="submit-button" type="submit">
               Registrarse
             </button>
           </div>
@@ -202,8 +177,9 @@ html, body {
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* This ensures the video covers the entire container */
-  z-index: 0; /* Keep the video in the background */
+  object-fit: cover;
+  z-index: 0;
+  filter: blur(5px);
 }
 
 /* Container for the registration form */
@@ -216,79 +192,237 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1; /* Position above the video */
-  padding: 20px;
-  overflow-y: auto; /* Allow scrolling if form is tall */
+  z-index: 1;
+  padding: 10px;
 }
 
 /* Styling for the registration form */
 .registration-form {
-  width: 60%;
-  max-width: 800px;
-  padding: 2rem;
-  background-color: rgba(97, 93, 93, 0.9); /* Semi-transparent background */
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 450px;
+  max-width: 90%;
+  padding: 1.5rem;
+  background-color: rgba(30, 33, 43, 0.85);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.title {
-  margin-bottom: 1.5rem;
-  color: #333;
+.form-title {
+  margin: 0 0 1rem 0;
+  color: #ffffff;
+  font-size: 1.5rem;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
-.field {
-  margin-bottom: 1rem;
+.form-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
-/* Make selects full width */
-.select {
+.form-group {
+  margin-bottom: 10px;
   width: 100%;
 }
 
-.select select {
+.form-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.8rem;
+  color: #e0e0e0;
+  font-weight: 500;
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #ffffff;
+  transition: all 0.3s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: rgba(255, 223, 0, 0.7);
+  box-shadow: 0 0 0 2px rgba(255, 223, 0, 0.2);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.date-input {
+  color-scheme: dark;
+}
+
+.custom-select {
+  position: relative;
   width: 100%;
 }
 
-/* Style for focused inputs */
-.input:focus, .select select:focus {
-  border-color: gold;
-  box-shadow: 0 0 0 0.125em rgba(255, 215, 0, 0.25);
+.custom-select select {
+  appearance: none;
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
-/* Button styling */
-.button {
-  background-color: yellow;
-  color: black;
-  font-weight: bold;
+.custom-select select:focus {
+  outline: none;
+  border-color: rgba(255, 223, 0, 0.7);
+  box-shadow: 0 0 0 2px rgba(255, 223, 0, 0.2);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.custom-select::after {
+  content: '▼';
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+  font-size: 0.7rem;
+}
+
+.terms-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-left: 24px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #e0e0e0;
+}
+
+.checkbox-label input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: absolute;
+  left: 0;
+  height: 16px;
+  width: 16px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.checkbox-label input:checked ~ .checkmark {
+  background-color: rgba(255, 223, 0, 0.9);
+  border-color: rgba(255, 223, 0, 0.9);
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.checkbox-label input:checked ~ .checkmark:after {
+  display: block;
+  left: 5px;
+  top: 2px;
+  width: 3px;
+  height: 8px;
+  border: solid #000;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.terms-text {
+  font-size: 0.8rem;
+}
+
+.terms-link {
+  color: rgb(255, 223, 0);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 223, 0, 0.3);
+  transition: all 0.3s;
+}
+
+.terms-link:hover {
+  border-bottom: 1px solid rgba(255, 223, 0, 0.8);
+}
+
+.submit-button {
+  width: 100%;
+  padding: 10px;
+  background-color: rgb(255, 223, 0);
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
   transition: all 0.3s ease;
+  margin-top: 5px;
 }
 
-.button:hover {
-  background-color: gold;
+.submit-button:hover {
+  background-color: rgb(255, 230, 50);
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 223, 0, 0.25);
 }
 
-/* Responsive adjustments */
+.submit-button:active {
+  transform: translateY(0);
+}
+
 @media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 5px;
+  }
+  
   .registration-form {
-    width: 90%;
-    padding: 1.5rem;
+    padding: 1.25rem;
   }
   
-  .columns {
-    margin-left: 0;
-    margin-right: 0;
+  .form-group {
+    margin-bottom: 8px;
   }
   
-  .column {
-    padding: 0.5rem;
+  .submit-button {
+    margin-top: 3px;
   }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 480px) {
   .registration-form {
-    width: 95%;
     padding: 1rem;
+  }
+  
+  .form-title {
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .form-input, .custom-select select {
+    padding: 7px 10px;
   }
 }
 </style>
