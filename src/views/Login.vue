@@ -50,7 +50,9 @@
           </div>
         </form>
         <div class="mt-4 has-text-centered">
-          <p class="help">¿Olvidaste tu contraseña? Contacta al administrador</p>
+          <p class="help">
+              <router-link to="/recovery-password">¿Olvidaste tu contraseña?</router-link> Contacta al administrador
+          </p>
         </div>
       </div>
     </div>
@@ -72,6 +74,10 @@ const isLoading = ref(false);
 let notyf: Notyf;
 
 onMounted(() => {
+  // Aplicar overflow:hidden al body cuando se monta el componente
+  document.body.style.overflow = "hidden";
+  document.documentElement.style.overflow = "hidden";
+  
   notyf = new Notyf({
     duration: 3000,
     position: { x: "right", y: "bottom" },
@@ -138,22 +144,50 @@ const login = async () => {
 };
 </script>
 
-<style scoped>
-/* Ensure the page has no margins or padding */
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
+<!-- Estilos globales - sin scope para que se apliquen fuera del componente -->
+<style>
+:root {
+  overflow: hidden !important;
 }
 
-/* Video container takes up the full viewport */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 100% !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE y Edge */
+}
+
+html::-webkit-scrollbar, 
+body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+body {
+  position: fixed !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+#app, main, .container, .section {
+  overflow: hidden !important;
+  max-height: 100vh !important;
+}
+</style>
+
+<!-- Estilos específicos del componente -->
+<style scoped>
+/* Video container takes up the viewport minus navbar height */
 .video-container {
   position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+  width: 100% !important; /* Cambiado de 100vw a 100% */
+  height: calc(100vh - 8.3vh);
+  overflow: hidden !important;
+  max-width: 100% !important;
 }
 
 /* Fullscreen video styling */
@@ -165,6 +199,7 @@ html, body {
   height: 100%;
   object-fit: cover; /* This ensures the video covers the entire container */
   z-index: 0; /* Keep the video in the background */
+  filter: blur(2px);
 }
 
 /* Container for the login form */
@@ -178,6 +213,7 @@ html, body {
   justify-content: center;
   align-items: center;
   z-index: 1; /* Position above the video */
+  overflow: hidden !important;
 }
 
 /* Styling for the login form */
@@ -187,7 +223,12 @@ html, body {
   padding: 2rem;
   background-color: #2c3e50; /* Semi-transparent background */
   border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: rgba(30, 33, 43, 0.85);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden !important;
 }
 
 .logo-image {
