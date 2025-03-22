@@ -1,52 +1,57 @@
 <template>
-  <div
-    class="container is-flex is-justify-content-center is-align-items-center"
-    style="height: 100vh"
-  >
-    <div style="width: 50%">
-      <img src="/logo2.png" alt="Logo" class="logo-image" />
-      <h1 class="title has-text-centered">Iniciar Sesión</h1>
-      <form @submit.prevent="login">
-        <div class="field">
-          <label class="label">Email</label>
-          <div class="control">
-            <input
-              class="input"
-              type="email"
-              v-model="email"
-              required
-              :disabled="isLoading"
-            />
+  <div class="video-container">
+    <!-- The video element should be positioned outside the container to allow fullscreen -->
+    <video autoplay muted loop id="background-video">
+      <source src="/video2.mp4" type="video/mp4">    
+    </video>
+    
+    <div class="login-form-container">
+      <div class="login-form">
+        <h1 class="title has-text-centered">Iniciar Sesión</h1>
+        <form @submit.prevent="login">
+          <div class="field">
+            <label class="label">Email</label>
+            <div class="control">
+              <input
+                class="input"
+                type="email"
+                v-model="email"
+                required
+                :disabled="isLoading"
+                placeholder="Ingresa tu email"
+              />
+            </div>
           </div>
-        </div>
-        <div class="field">
-          <label class="label">Contraseña</label>
-          <div class="control">
-            <input
-              class="input"
-              type="password"
-              v-model="password"
-              required
-              :disabled="isLoading"
-            />
+          <div class="field">
+            <label class="label" >Contraseña</label>
+            <div class="control">
+              <input
+                class="input"
+                type="password"
+                v-model="password"
+                required
+                :disabled="isLoading"
+                placeholder="ingresa tu contraseña"
+              />
+            </div>
           </div>
+          <div class="control has-text-centered">
+            <button
+              class="button is-fullwidth"
+              :disabled="isLoading"
+              style="background-color: yellow; color: black"
+            >
+              <span v-if="isLoading" class="loader-container">
+                <span class="spinner"></span>
+                <span class="ml-2">Iniciando sesión...</span>
+              </span>
+              <span v-else>Iniciar Sesión</span>
+            </button>
+          </div>
+        </form>
+        <div class="mt-4 has-text-centered">
+          <p class="help">¿Olvidaste tu contraseña? Contacta al administrador</p>
         </div>
-        <div class="control has-text-centered">
-          <button
-            class="button is-fullwidth"
-            :disabled="isLoading"
-            style="background-color: yellow; color: black"
-          >
-            <span v-if="isLoading" class="loader-container">
-              <span class="spinner"></span>
-              <span class="ml-2">Iniciando sesión...</span>
-            </span>
-            <span v-else>Iniciar Sesión</span>
-          </button>
-        </div>
-      </form>
-      <div class="mt-4 has-text-centered">
-        <p class="help">¿Olvidaste tu contraseña? Contacta al administrador</p>
       </div>
     </div>
   </div>
@@ -134,15 +139,55 @@ const login = async () => {
 </script>
 
 <style scoped>
-.container {
+/* Ensure the page has no margins or padding */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Video container takes up the full viewport */
+.video-container {
+  position: relative;
+  width: 100vw;
   height: 100vh;
+  overflow: hidden;
+}
+
+/* Fullscreen video styling */
+#background-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* This ensures the video covers the entire container */
+  z-index: 0; /* Keep the video in the background */
+}
+
+/* Container for the login form */
+.login-form-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1; /* Position above the video */
 }
 
-.box {
+/* Styling for the login form */
+.login-form {
   width: 50%;
+  max-width: 500px;
+  padding: 2rem;
+  background-color: #2c3e50; /* Semi-transparent background */
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .logo-image {
@@ -187,5 +232,12 @@ input:disabled {
 .input:focus {
   border-color: gold;
   box-shadow: 0 0 0 0.125em rgba(255, 215, 0, 0.25);
+}
+
+/* Add media queries for responsive design */
+@media (max-width: 768px) {
+  .login-form {
+    width: 80%;
+  }
 }
 </style>
