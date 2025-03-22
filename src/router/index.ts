@@ -10,6 +10,7 @@ import Tararea from "@/views/Tararea.vue";
 import Home from "@/views/Home.vue";
 import profile from "@/views/profile.vue";
 import RecoveryPassword from "@/views/RecoveryPassword.vue";
+import Music from "@/views/music.vue";
 
 const routes = [
   { path: "/juegos", component: Gaming },
