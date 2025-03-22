@@ -1,10 +1,10 @@
 <template>
   <div class="video-container">
     <!-- Fullscreen background video -->
-    <video autoplay muted loop id="background-video">
-      <source src="/video1.mp4" type="video/mp4">    
+    <video autoplay loop id="background-video">
+      <source src="/info.mp4" type="video/mp4" />
     </video>
-    
+
     <div class="registration-form-container">
       <div class="registration-form">
         <h1 class="title has-text-centered">Registrarse</h1>
@@ -15,7 +15,12 @@
               <div class="field">
                 <label class="label">Nombre</label>
                 <div class="control">
-                  <input class="input" type="text" v-model="firstName" required />
+                  <input
+                    class="input"
+                    type="text"
+                    v-model="firstName"
+                    required
+                  />
                 </div>
               </div>
             </div>
@@ -23,7 +28,12 @@
               <div class="field">
                 <label class="label">Apellido</label>
                 <div class="control">
-                  <input class="input" type="text" v-model="lastName" required />
+                  <input
+                    class="input"
+                    type="text"
+                    v-model="lastName"
+                    required
+                  />
                 </div>
               </div>
             </div>
@@ -35,14 +45,19 @@
               <input class="input" type="email" v-model="email" required />
             </div>
           </div>
-          
+
           <div class="field">
             <label class="label">Contraseña</label>
             <div class="control">
-              <input class="input" type="password" v-model="password" required />
+              <input
+                class="input"
+                type="password"
+                v-model="password"
+                required
+              />
             </div>
           </div>
-          
+
           <!-- Aligned select fields in equal columns -->
           <div class="columns is-multiline">
             <div class="column is-one-third">
@@ -61,7 +76,7 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="column is-one-third">
               <div class="field">
                 <label class="label">Ciudad</label>
@@ -78,7 +93,7 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="column is-one-third">
               <div class="field">
                 <label class="label">Tipo de Documento</label>
@@ -94,14 +109,14 @@
               </div>
             </div>
           </div>
-          
+
           <div class="field">
             <label class="label">Fecha de Nacimiento</label>
             <div class="control">
               <input class="input" type="date" v-model="birthDate" required />
             </div>
           </div>
-          
+
           <div class="field mt-4">
             <div class="control">
               <label class="checkbox">
@@ -111,7 +126,7 @@
               </label>
             </div>
           </div>
-          
+
           <div class="control has-text-centered mt-4">
             <button
               class="button is-fullwidth"
@@ -179,7 +194,8 @@ const register = async () => {
 
 <style scoped>
 /* Ensure the page has no margins or padding */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -250,7 +266,8 @@ html, body {
 }
 
 /* Style for focused inputs */
-.input:focus, .select select:focus {
+.input:focus,
+.select select:focus {
   border-color: gold;
   box-shadow: 0 0 0 0.125em rgba(255, 215, 0, 0.25);
 }
@@ -274,12 +291,12 @@ html, body {
     width: 90%;
     padding: 1.5rem;
   }
-  
+
   .columns {
     margin-left: 0;
     margin-right: 0;
   }
-  
+
   .column {
     padding: 0.5rem;
   }

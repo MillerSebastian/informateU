@@ -17,7 +17,7 @@ export default defineComponent({
   },
   mounted() {
     if (!auth.currentUser) {
-      this.$router.push("/login");
+      this.$router.push("/");
     }
   },
 });

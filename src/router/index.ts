@@ -5,11 +5,11 @@ import Gaming from "@/views/Gaming.vue";
 import Moda from "@/views/Moda.vue";
 import Login from "@/views/Login.vue";
 import Register from "@/views/Register.vue";
-import Productos from "@/views/Productos.vue";
 import Tararea from "@/views/Tararea.vue";
 //@ts-ignore
 import Home from "@/views/Home.vue";
 import profile from "@/views/profile.vue";
+import Music from "@/views/music.vue";
 
 const routes = [
   { path: "/juegos", component: Gaming },
@@ -18,7 +18,7 @@ const routes = [
   { path: "/deportes", component: Sport },
   { path: "/login", component: Login },
   { path: "/register", component: Register },
-  { path: "/productos", component: Productos },
+  { path: "/music", component: Music },
   { path: "/tararea", component: Tararea },
   { path: "/profile", component: profile },
   { path: "/", component: Home },

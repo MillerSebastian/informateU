@@ -138,7 +138,7 @@ const deleteNews = async (id: string) => {
     await deleteDoc(doc(db, props.category, id));
     notyf.success("Noticia eliminada exitosamente");
   } catch (error) {
-    notyf.error("Error sl elimnar esta noticia");
+    notyf.error("Error sl elimnar");
     return;
   }
 };
@@ -160,9 +160,9 @@ const isExpanded = ref(false);
 
 .card-image img,
 .video-container video {
-  object-fit: cover;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
 }
 
 .content {

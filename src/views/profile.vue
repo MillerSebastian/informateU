@@ -151,6 +151,7 @@
         <div
           v-else-if="userNews.length === 0"
           class="no-news-message has-text-centered"
+          style="background-color: hsl(220deg 13.04% 9.02%)"
         >
           <i class="fas fa-newspaper fa-3x mb-3"></i>
           <p>No has publicado ninguna noticia todavía.</p>
@@ -471,7 +472,7 @@ const getCategoryClass = (category: string) => {
 
 const editNews = (news: News) => {
   sessionStorage.setItem("editingNews", JSON.stringify(news));
-  router.push(`/noticias/${news.category}/${news.id}`);
+  router.push(`/${news.category}/`);
 };
 
 const deleteNews = async (news: News) => {

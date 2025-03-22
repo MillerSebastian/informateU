@@ -43,9 +43,7 @@
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link">Más</a>
           <div class="navbar-dropdown">
-            <router-link class="navbar-item" to="/productos"
-              >Productos</router-link
-            >
+            <router-link class="navbar-item" to="/music">Rolitas</router-link>
             <router-link class="navbar-item" to="/tararea">Tararea</router-link>
           </div>
         </div>
@@ -55,19 +53,19 @@
         <div class="navbar-item" v-if="!user">
           <div class="buttons">
             <router-link class="button" to="/register">
-              <strong>Sign up</strong>
+              <strong>Registrate</strong>
             </router-link>
             <router-link
               style="background-color: yellow; color: black"
               class="button"
               to="/login"
-              >Log in</router-link
+              >Inicia session</router-link
             >
           </div>
         </div>
         <div class="navbar-item" v-if="user">
           <div class="buttons">
-            <button @click="logout" class="button">Log out</button>
+            <button @click="logout" class="button">Cerrar session</button>
           </div>
         </div>
       </div>
@@ -100,7 +98,7 @@ const logout = async () => {
   try {
     await signOut(auth);
     user.value = null;
-    router.push("/login");
+    router.push("/");
   } catch (error) {
     console.error("Error al cerrar sesión:", error);
   }
