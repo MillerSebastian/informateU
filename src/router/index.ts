@@ -23,11 +23,8 @@ const routes = [
   { path: "/tararea", component: Tararea },
   { path: "/profile", component: profile },
   { path: "/", component: Home },
-  {
-    path: "/recovery-password",
-    name: "RecoveryPassword",
-    component: RecoveryPassword,
-  },
+  { path: "/recovery-password", component: RecoveryPassword },
+
   // Ruta comodín al final
   {
     path: "/:pathMatch(.*)*",
@@ -42,23 +39,16 @@ const router = createRouter({
 
 // Añade esto para depurar la redirección
 router.beforeEach((to, from, next) => {
-  console.log("Navegando de", from.path, "a", to.path);
-
-  // Desactivamos temporalmente cualquier redirección al login
-  // para diagnóstico
+  // Desactivamos temporalmente cualquier redirección al login para diagnóstico
   if (
-    to.path === "/login" &&
+    to.path === "/Login" &&
     from.path !== "/" &&
-    !from.path.includes("login")
+    !from.path.includes("Login")
   ) {
-    console.warn("⚠️ Detectada redirección a login desde", from.path);
-    console.trace("Traza de la redirección");
-    // Comentamos esta línea para evitar la redirección a login
-    // next('/login');
-    next(false); // Mantiene al usuario en la página actual
-  } else {
-    next();
+    console.warn("⚠️ Redirección a login detectada desde", from.path);
+    // No hacer `next("/Login")` aquí, ya que estamos yendo a /Login de todas formas
   }
+  next();
 });
 
 export default router;

@@ -47,6 +47,9 @@
             <router-link class="navbar-item" to="/tararea">Tararea</router-link>
           </div>
         </div>
+        <div class="navbar-item">
+          <button class="button" @click="showNotifications = true">🔔</button>
+        </div>
       </div>
 
       <div class="navbar-end">
@@ -71,6 +74,24 @@
       </div>
     </div>
   </nav>
+
+  <div class="modal" :class="{ 'is-active': showNotifications }">
+    <div class="modal-background" @click="showNotifications = false"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Notificaciones</p>
+        <button class="delete" @click="showNotifications = false"></button>
+      </header>
+      <section class="modal-card-body">
+        <p>Aquí aparecerán tus notificaciones...</p>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button is-danger" @click="showNotifications = false">
+          Cerrar
+        </button>
+      </footer>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -82,6 +103,7 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 const isActive = ref(false);
 const user = ref(null);
+const showNotifications = ref(false);
 
 onMounted(() => {
   onAuthStateChanged(auth, (currentUser) => {
@@ -128,5 +150,8 @@ const logout = async () => {
 
 .perfil:hover {
   color: blue;
+}
+.modal-card {
+  max-width: 400px;
 }
 </style>

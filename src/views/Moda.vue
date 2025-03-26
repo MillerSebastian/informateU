@@ -16,7 +16,8 @@
 
       <!-- Mensaje de depuración para verificar si hay datos -->
       <p v-if="newsList.length === 0" class="no-news-message">
-        Cargando noticias... Si este mensaje persiste, es posible que no haya noticias disponibles.
+        Cargando noticias... Si este mensaje persiste, es posible que no haya
+        noticias disponibles.
       </p>
 
       <div class="moda-feed">
@@ -29,14 +30,20 @@
         />
       </div>
     </div>
-    
+
     <AppFooter class="page-footer" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { getFirestore, collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  onSnapshot,
+  query,
+  orderBy,
+} from "firebase/firestore";
 import AddNewsModal from "@/components/AddNewsModal.vue";
 import NewsCard from "@/components/NewsCards.vue";
 import AppFooter from "@/components/AppFooter.vue";
@@ -54,24 +61,32 @@ onMounted(() => {
   try {
     // Intenta primero sin el orderBy para descartar problemas con índices
     const newsRef = collection(db, "moda");
-    onSnapshot(newsRef, (snapshot) => {
-      console.log("Datos recibidos de Firestore:", snapshot.docs.length, "documentos");
-      if (snapshot.empty) {
-        console.log("No hay documentos en la colección moda");
-        return;
+    onSnapshot(
+      newsRef,
+      (snapshot) => {
+        console.log(
+          "Datos recibidos de Firestore:",
+          snapshot.docs.length,
+          "documentos"
+        );
+        if (snapshot.empty) {
+          console.log("No hay documentos en la colección moda");
+          return;
+        }
+
+        newsList.value = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          console.log("Documento:", doc.id, data);
+          return {
+            id: doc.id,
+            ...data,
+          };
+        });
+      },
+      (error) => {
+        console.error("Error al obtener noticias:", error);
       }
-      
-      newsList.value = snapshot.docs.map((doc) => {
-        const data = doc.data();
-        console.log("Documento:", doc.id, data);
-        return {
-          id: doc.id,
-          ...data,
-        };
-      });
-    }, (error) => {
-      console.error("Error al obtener noticias:", error);
-    });
+    );
   } catch (error) {
     console.error("Error en onMounted:", error);
   }
@@ -103,17 +118,8 @@ onMounted(() => {
 }
 
 .is-button-modal {
-  background-color: blueviolet;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  font-size: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  background-color: rgb(153, 0, 255);
+  color: black;
 }
 
 .moda-feed {
@@ -154,7 +160,8 @@ onMounted(() => {
 }
 
 /* Estilos globales necesarios */
-:global(html), :global(body) {
+:global(html),
+:global(body) {
   height: 100%;
   margin: 0;
   padding: 0;

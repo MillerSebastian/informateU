@@ -1,7 +1,7 @@
 <template>
   <div class="video-container">
     <!-- Fullscreen background video -->
-    <video autoplay loop id="background-video">
+    <video autoplay muted loop id="background-video">
       <source src="/info.mp4" type="video/mp4" />
     </video>
 

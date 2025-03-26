@@ -2,9 +2,9 @@
   <div class="video-container">
     <!-- The video element should be positioned outside the container to allow fullscreen -->
     <video autoplay muted loop id="background-video">
-      <source src="/video2.mp4" type="video/mp4">    
+      <source src="/video2.mp4" type="video/mp4" />
     </video>
-    
+
     <div class="login-form-container">
       <div class="login-form">
         <h1 class="title has-text-centered">Iniciar Sesión</h1>
@@ -23,7 +23,7 @@
             </div>
           </div>
           <div class="field">
-            <label class="label" >Contraseña</label>
+            <label class="label">Contraseña</label>
             <div class="control">
               <input
                 class="input"
@@ -51,7 +51,10 @@
         </form>
         <div class="mt-4 has-text-centered">
           <p class="help">
-              <router-link to="/recovery-password">¿Olvidaste tu contraseña?</router-link> Contacta al administrador
+            <router-link to="/recovery-password"
+              >¿Olvidaste tu contraseña?</router-link
+            >
+            Contacta al administrador
           </p>
         </div>
       </div>
@@ -77,7 +80,7 @@ onMounted(() => {
   // Aplicar overflow:hidden al body cuando se monta el componente
   document.body.style.overflow = "hidden";
   document.documentElement.style.overflow = "hidden";
-  
+
   notyf = new Notyf({
     duration: 3000,
     position: { x: "right", y: "bottom" },
@@ -150,7 +153,8 @@ const login = async () => {
   overflow: hidden !important;
 }
 
-html, body {
+html,
+body {
   margin: 0 !important;
   padding: 0 !important;
   height: 100% !important;
@@ -160,7 +164,7 @@ html, body {
   -ms-overflow-style: none !important; /* IE y Edge */
 }
 
-html::-webkit-scrollbar, 
+html::-webkit-scrollbar,
 body::-webkit-scrollbar {
   display: none !important;
   width: 0 !important;
@@ -173,7 +177,10 @@ body {
   height: 100% !important;
 }
 
-#app, main, .container, .section {
+#app,
+main,
+.container,
+.section {
   overflow: hidden !important;
   max-height: 100vh !important;
 }
