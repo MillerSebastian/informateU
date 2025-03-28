@@ -17,13 +17,31 @@
             :class="{
               'is-active': selectedUser && selectedUser.id === user.id,
             }"
+            class="is-flex is-align-items-center is-justify-content-space-between"
           >
-            <div class="user-name">
-              {{ user.firstName + " " + user.lastName }}
+            <div class="is-flex is-align-items-center">
+              <div class="user-status-indicator mr-2" :class="{
+                'is-online': isUserOnline(user.id),
+                'is-offline': !isUserOnline(user.id)
+              }"></div>
+              <div class="user-name">
+                {{ user.firstName + " " + user.lastName }}
+              </div>
             </div>
-            <span v-if="unreadMessages[user.id]" class="notification-badge">
-              {{ unreadMessages[user.id] }}
-            </span>
+            <div class="user-actions is-flex">
+              <button 
+                @click.stop="viewUserProfile(user)" 
+                class="button is-small is-light mr-2"
+                title="Ver perfil"
+              >
+                <span class="icon">
+                  <i class="fas fa-user"></i>
+                </span>
+              </button>
+              <span v-if="unreadMessages[user.id]" class="notification-badge">
+                {{ unreadMessages[user.id] }}
+              </span>
+            </div>
           </li>
         </ul>
       </div>
@@ -212,7 +230,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch, nextTick } from "vue";
+import {  ref, onMounted, computed, watch, nextTick  } from "vue";
 import {
   collection,
   addDoc,
@@ -235,6 +253,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import { db, auth } from "@/firebase";
+import { useRouter } from 'vue-router';
 
 // Interfaces actualizadas para reflejar la estructura de datos del registro
 interface User {
@@ -285,88 +304,30 @@ const showEmojiPicker = ref<boolean>(false);
 const selectedFile = ref<File | null>(null);
 const isUploading = ref<boolean>(false);
 
+// Add this to your existing script setup
+const router = useRouter();
+
+// Function to check user online status (you'll need to implement this)
+const isUserOnline = (userId: string): boolean => {
+  // Placeholder implementation
+  // In a real-world scenario, you'd track user online status 
+  // through Firebase presence or a similar mechanism
+  return false; // Replace with actual online status logic
+};
+
+const viewUserProfile = (user: User) => {
+  router.push({ 
+    name: '/ViewProfile', 
+    params: { userId: user.id } 
+  });
+};
+
 // Emojis comunes para el selector
 const commonEmojis = [
-  "😀",
-  "😁",
-  "😂",
-  "🤣",
-  "😃",
-  "😄",
-  "😅",
-  "😆",
-  "😉",
-  "😊",
-  "😋",
-  "😎",
-  "😍",
-  "😘",
-  "🥰",
-  "😗",
-  "😙",
-  "😚",
-  "🙂",
-  "🤗",
-  "🤔",
-  "🤨",
-  "😐",
-  "😑",
-  "😶",
-  "🙄",
-  "😏",
-  "😣",
-  "😥",
-  "😮",
-  "🤐",
-  "😯",
-  "😪",
-  "😫",
-  "😴",
-  "😌",
-  "😛",
-  "😜",
-  "😝",
-  "🤤",
-  "😒",
-  "😓",
-  "😔",
-  "😕",
-  "🙃",
-  "🤑",
-  "😲",
-  "☹️",
-  "🙁",
-  "😖",
-  "😞",
-  "😟",
-  "😤",
-  "😢",
-  "😭",
-  "😦",
-  "😧",
-  "😨",
-  "😩",
-  "🤯",
-  "👍",
-  "👎",
-  "👏",
-  "🙌",
-  "👌",
-  "✌️",
-  "🤘",
-  "🤙",
-  "👋",
-  "❤️",
-  "💔",
-  "💯",
-  "🔥",
-  "⚡",
-  "🌟",
-  "💤",
-  "💭",
-  "🎵",
-  "🎶",
-  "🎂",
+  "😀","😁","😂","🤣","😃","😄","😅","😆","😉","😊","😋","😎","😍","😘","🥰","😗","😙","😚","🙂","🤗",
+  "🤔","🤨","😐","😑","😶","🙄","😏","😣","😥","😮","🤐","😯","😪","😫","😴","😌","😛","😜","😝","🤤",
+  "😒","😓","😔","😕","🙃","🤑","😲","☹️","🙁","😖","😞","😟","😤","😢","😭","😦","😧","😨","😩","🤯","👍",
+  "👎","👏","🙌","👌", "✌️", "🤘", "🤙", "👋", "❤️", "💔", "💯", "🔥", "⚡", "🌟", "💤", "💭", "🎵", "🎶","🎂",
 ];
 
 const usersCollection = collection(db, "users");
@@ -376,87 +337,14 @@ const storage = getStorage();
 
 // Lista de colores para asignar a los usuarios
 const colorPalette = [
-  "#FF5733",
-  "#33A8FF",
-  "#33FF57",
-  "#FF33A8",
-  "#A833FF",
-  "#FF8C33",
-  "#33FFC5",
-  "#FF33F5",
-  "#C5FF33",
-  "#337BFF",
-  "#FF5E3A",
-  "#3AFF8C",
-  "#8C3AFF",
-  "#FFD13A",
-  "#3AFFD1",
-  "#F5A533",
-  "#33FFCC",
-  "#F533FF",
-  "#FF3357",
-  "#5733FF",
-  "#33FF92",
-  "#FF8CFF",
-  "#C533FF",
-  "#33FF57",
-  "#FF335B",
-  "#FF8C80",
-  "#33F5A8",
-  "#8CFF33",
-  "#A8FF33",
-  "#33FF72",
-  "#FF6333",
-  "#FF57E5",
-  "#33C5FF",
-  "#F7FF33",
-  "#F533D1",
-  "#FF6B33",
-  "#C533A8",
-  "#6CFF33",
-  "#33FF6C",
-  "#FF3A8C",
-  "#9BFF33",
-  "#6B33FF",
-  "#33FF48",
-  "#A8FF8C",
-  "#FF91A8",
-  "#33FFEC",
-  "#FF336B",
-  "#F5FF33",
-  "#FF33B3",
-  "#FF3A8C",
-  "#FF6342",
-  "#4BFF33",
-  "#B9FF33",
-  "#FF339D",
-  "#C733FF",
-  "#F533FF",
-  "#FF33F7",
-  "#8CFFFB",
-  "#FF33C5",
-  "#A8336B",
-  "#B333FF",
-  "#3A8CFF",
-  "#FF3333",
-  "#33FFFD",
-  "#FF8CF3",
-  "#7CFF33",
-  "#FF33AA",
-  "#C8FF33",
-  "#FF7F33",
-  "#33D1FF",
-  "#8CFF57",
-  "#FF33F0",
-  "#33FF97",
-  "#8CFFCC",
-  "#33C9FF",
-  "#FF3377",
-  "#A8FF75",
-  "#FF75A8",
-  "#3AFF5C",
-  "#A833FF",
-  "#D8FF33",
+  "#FF5733","#33A8FF","#33FF57","#FF33A8","#A833FF","#FF8C33","#33FFC5","#FF33F5","#C5FF33",
+  "#337BFF","#FF5E3A","#3AFF8C","#8C3AFF","#FFD13A","#3AFFD1","#F5A533","#33FFCC","#F533FF","#FF3357","#5733FF",
+  "#33FF92","#FF8CFF","#C533FF","#33FF57","#FF335B","#FF8C80","#33F5A8","#8CFF33","#A8FF33","#33FF72",
+  "#FF6333","#FF57E5","#33C5FF","#F7FF33","#F533D1","#FF6B33","#C533A8","#6CFF33","#33FF6C",
+  "#FF3A8C","#9BFF33","#6B33FF","#33FF48","#A8FF8C","#FF91A8","#33FFEC","#FF336B","#F5FF33","#FF33B3","#FF3A8C","#FF6342","#4BFF33","#B9FF33","#FF339D","#C733FF","#F533FF","#FF33F7","#8CFFFB",
+  "#FF33C5","#A8336B","#B333FF","#3A8CFF","#FF3333","#33FFFD","#FF8CF3","#7CFF33","#FF33AA","#C8FF33",
+  "#FF7F33","#33D1FF","#8CFF57","#FF33F0","#33FF97","#8CFFCC","#33C9FF","#FF3377","#A8FF75","#FF75A8","#3AFF5C",
+  "#A833FF","#D8FF33",
 ];
 
 // Computed property para filtrar al usuario actual y verificar existencia
@@ -1250,6 +1138,25 @@ button.is-primary {
 .selected-file .icon {
   margin-right: 8px;
   color: #3273dc;
+}
+
+.user-status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.user-status-indicator.is-online {
+  background-color: #48bb78; /* Green */
+}
+
+.user-status-indicator.is-offline {
+  background-color: #a0aec0; /* Gray */
+}
+
+.user-actions {
+  align-items: center;
 }
 
 /* Estilo para dispositivos móviles */
