@@ -11,6 +11,7 @@ import Home from "@/views/Home.vue";
 import profile from "@/views/profile.vue";
 import RecoveryPassword from "@/views/RecoveryPassword.vue";
 import Music from "@/views/music.vue";
+import ViewProfile from "@/components/ViewProfile.vue";
 
 const routes = [
   { path: "/juegos", component: Gaming },
@@ -24,6 +25,12 @@ const routes = [
   { path: "/profile", component: profile },
   { path: "/", component: Home },
   { path: "/recovery-password", component: RecoveryPassword },
+  {
+    path: '/profile/:userId',
+    name: '/ViewProfile',
+    component: ViewProfile,
+    meta: { requiresAuth: true }
+  },
 
   // Ruta comodín al final
   {
