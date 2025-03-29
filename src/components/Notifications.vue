@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, watch } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
 import {
   collection,
   query,
@@ -30,7 +30,6 @@ interface MessageNotification {
   timestamp: Timestamp;
   type: "message";
 }
-const emit = defineEmits(["notification-count"]);
 
 type Notification = NewsNotification | MessageNotification;
 
@@ -172,13 +171,6 @@ const formatTimestamp = (timestamp: Timestamp): string => {
   });
 };
 
-// defineExpose({
-//   clearNotifications
-// });
-
-watch(unreadCount, (newCount) => {
-  emit("notification-count", newCount);
-});
 // Limpiar notificaciones
 const clearNotifications = () => {
   notifications.value = [];
@@ -217,6 +209,10 @@ onUnmounted(() => {
   unsubscribes.forEach((unsub) => unsub());
   authUnsubscribe();
 });
+
+// defineExpose({
+//   clearNotifications,
+// });
 </script>
 
 <template>
@@ -234,9 +230,6 @@ onUnmounted(() => {
     <!-- Contenedor de notificaciones -->
     <template v-else>
       <!-- Contador de notificaciones no leídas -->
-      <div v-if="unreadCount > 0" class="notification-badge">
-        {{ unreadCount }}
-      </div>
 
       <div class="notifications-list">
         <!-- Estado vacío -->

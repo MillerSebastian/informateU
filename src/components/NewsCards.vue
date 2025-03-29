@@ -29,11 +29,7 @@
 
       <div class="news-card__author">
         <div class="news-card__author-image">
-          <img
-            :src="authorProfileImage"
-            alt="Imagen de perfil del autor"
-            @error="handleImageError"
-          />
+          <img :src="authorProfileImage" alt="Imagen de perfil del autor" />
         </div>
         <div class="news-card__author-info">
           <span class="news-card__author-name"
@@ -43,6 +39,13 @@
             formattedDate
           }}</time>
         </div>
+        <button
+          class="news-card__profile-btn"
+          @click="viewUserProfile"
+          title="Ver perfil"
+        >
+          <i class="fas fa-user"></i>
+        </button>
       </div>
 
       <div class="news-card__description">
@@ -76,6 +79,7 @@ import { doc, deleteDoc, getDoc } from "firebase/firestore";
 import { db } from "@/firebase";
 import { Notyf } from "notyf";
 import "notyf/notyf.min.css";
+import { useRouter } from "vue-router";
 
 interface News {
   id: string;
@@ -83,9 +87,20 @@ interface News {
   title: string;
   author: string;
   description: string;
+  perfilImg: string;
   timestamp: any;
   fileType: string;
   userId: string;
+}
+interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  program: string;
+  city: string;
+  documentType: string;
+  birthDate: string;
 }
 
 const props = defineProps<{
@@ -94,7 +109,9 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits(["newsDeleted"]);
+const router = useRouter();
 
+const users = ref<User[]>([]);
 const hover = ref(false);
 const isExpanded = ref(false);
 const authorProfileImage = ref(
@@ -112,6 +129,18 @@ const truncateText = (text: string, maxLength: number) => {
   if (!text) return "";
   if (text.length <= maxLength) return text;
   return text.substring(0, maxLength) + "...";
+};
+
+// Función para navegar al perfil del usuario
+const viewUserProfile = () => {
+  if (props.news.userId) {
+    router.push({
+      name: "/ViewProfile",
+      params: { userId: props.news.userId },
+    });
+  } else {
+    notyf.error("No se encontró información del usuario");
+  }
 };
 
 onMounted(async () => {
@@ -141,23 +170,25 @@ onMounted(async () => {
     ],
   });
 
-  // Obtener imagen de perfil del autor
+  // Obtener imagen de perfil del autor desde la colección users
   try {
     if (props.news.userId) {
-      const userDoc = doc(db, "users", props.news.userId);
-      const docSnap = await getDoc(userDoc);
-      if (docSnap.exists() && docSnap.data().perfilImg) {
-        authorProfileImage.value = docSnap.data().perfilImg;
+      const userRef = doc(db, "users", props.news.userId);
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        if (userData && userData.perfilImg) {
+          authorProfileImage.value = userData.perfilImg;
+        }
+      } else {
+        console.error("No se encontró el documento del usuario");
       }
     }
   } catch (error) {
     console.error("Error al obtener la imagen de perfil:", error);
   }
 });
-
-const handleImageError = (event) => {
-  event.target.src = "https://bulma.io/assets/images/placeholders/96x96.png";
-};
 
 const formattedDate = computed(() => {
   const date = new Date(props.news.timestamp.seconds * 1000);
@@ -350,6 +381,29 @@ const deleteNews = async (id: string) => {
 
 .news-card--expanded {
   max-width: 500px;
+}
+.news-card__author {
+  display: flex;
+  align-items: center;
+}
+
+.news-card__profile-btn {
+  margin-left: 10px;
+  background-color: #3273dc;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.news-card__profile-btn:hover {
+  background-color: #2366d1;
 }
 
 .news-card--expanded .news-card__description--clipped {
