@@ -10,7 +10,11 @@ import {
   doc,
   getDocs,
 } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import {
+  getAuth,
+  setPersistence,
+  browserLocalPersistence,
+} from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 // Configuración de tu aplicación Firebase
@@ -36,9 +40,13 @@ const firebaseConfig = {
 // Inicializa tu aplicación Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app); // Analytics (opcional)
-const db = getFirestore(app); // Firestore
-const auth = getAuth(app); // Authentication
+const db = getFirestore(app); // Firestore // Authentication
 const storage = getStorage(app); // Firebase Storage
+
+const auth = getAuth(app);
+setPersistence(auth, browserLocalPersistence).catch((error) => {
+  console.error("Error setting persistence:", error);
+});
 
 // Exporta todos los objetos para usarlos en tu aplicación
 export {

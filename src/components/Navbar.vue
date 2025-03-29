@@ -6,7 +6,6 @@
           Informate<span style="color: yellow">Ü</span>
         </span>
       </router-link>
-
       <a
         role="button"
         class="navbar-burger"
@@ -20,7 +19,6 @@
         <span aria-hidden="true"></span>
       </a>
     </div>
-
     <div
       id="navbarBasicExample"
       :class="{ 'navbar-menu': true, 'is-active': isActive }"
@@ -39,7 +37,6 @@
         <router-link class="navbar-item perfil" to="/profile"
           >Perfil</router-link
         >
-
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link">Más</a>
           <div class="navbar-dropdown">
@@ -47,11 +44,15 @@
             <router-link class="navbar-item" to="/tararea">Tararea</router-link>
           </div>
         </div>
-        <div class="navbar-item">
-          <button class="button" @click="showNotifications = true">🔔</button>
+        <div class="navbar-item notification-container">
+          <button class="button" @click="openNotifications">
+            🔔
+            <span v-if="notificationCount > 0" class="notification-badge">
+              {{ notificationCount }}
+            </span>
+          </button>
         </div>
       </div>
-
       <div class="navbar-end">
         <div class="navbar-item" v-if="!user">
           <div class="buttons">
@@ -74,22 +75,19 @@
       </div>
     </div>
   </nav>
-
   <div class="modal" :class="{ 'is-active': showNotifications }">
-    <div class="modal-background" @click="showNotifications = false"></div>
+    <div class="modal-background" @click="closeNotifications"></div>
     <div class="modal-card">
       <header class="modal-card-head">
         <p class="modal-card-title">Notificaciones</p>
-        <button class="delete" @click="showNotifications = false"></button>
+        <button class="delete" @click="closeNotifications"></button>
       </header>
       <section class="modal-card-body">
-        <p>Aquí aparecerán tus notificaciones...</p>
+        <Notifications
+          ref="notificationsComponent"
+          @notification-count="updateNotificationCount"
+        />
       </section>
-      <footer class="modal-card-foot">
-        <button class="button is-danger" @click="showNotifications = false">
-          Cerrar
-        </button>
-      </footer>
     </div>
   </div>
 </template>
@@ -99,11 +97,14 @@ import { ref, onMounted } from "vue";
 import { auth } from "../firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from "vue-router";
+import Notifications from "@/components/Notifications.vue";
 
 const router = useRouter();
 const isActive = ref(false);
 const user = ref(null);
 const showNotifications = ref(false);
+const notificationCount = ref(0);
+const notificationsComponent = ref(null);
 
 onMounted(() => {
   onAuthStateChanged(auth, (currentUser) => {
@@ -125,10 +126,32 @@ const logout = async () => {
     console.error("Error al cerrar sesión:", error);
   }
 };
+
+const updateNotificationCount = (count: number) => {
+  notificationCount.value = count;
+};
+
+const openNotifications = () => {
+  showNotifications.value = true;
+  // Reset notification count when opening notifications
+  if (notificationsComponent.value) {
+    // @ts-ignore
+    notificationsComponent.value.clearNotifications();
+  }
+};
+
+const closeNotifications = () => {
+  showNotifications.value = false;
+  // Reset notification count when closing notifications
+  if (notificationsComponent.value) {
+    // @ts-ignore
+    notificationsComponent.value.clearNotifications();
+  }
+};
 </script>
 
 <style scoped>
-ß .navbar-item {
+.navbar-item {
   transition: color 0.3s ease;
 }
 
@@ -151,7 +174,23 @@ const logout = async () => {
 .perfil:hover {
   color: blue;
 }
+
 .modal-card {
   max-width: 400px;
+}
+
+.notification-container {
+  position: relative;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 10px;
 }
 </style>
