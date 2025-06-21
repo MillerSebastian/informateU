@@ -78,6 +78,8 @@ import {
   collection,
   Timestamp,
   getDownloadURL,
+  doc,
+  getDoc,
 } from "@/firebase";
 import { getAuth } from "firebase/auth";
 import { Notyf } from "notyf";
@@ -168,6 +170,19 @@ const addNews = async () => {
       return;
     }
 
+    // Obtener la imagen de perfil del usuario
+    let userProfileImage = "";
+    try {
+      const userDoc = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userDoc);
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        userProfileImage = userData.perfilImg || "";
+      }
+    } catch (error) {
+      console.error("Error al obtener imagen de perfil:", error);
+    }
+
     if (file.value) {
       const storageReference = storageRef(
         storage,
@@ -183,6 +198,8 @@ const addNews = async () => {
       mediaUrl: mediaUrl.value,
       fileType: fileType.value,
       author: user.displayName || user.email,
+      userId: user.uid,
+      perfilImg: userProfileImage,
       timestamp: Timestamp.now(),
     });
 
